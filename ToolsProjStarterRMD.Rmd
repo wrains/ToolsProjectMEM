@@ -1,0 +1,387 @@
+---
+title: "ProjectRmdTools"
+author: "Will Rains"
+date: "11/3/2021"
+output: 
+  html_document:
+    theme: darkly
+    highlight: espresso
+---
+## Introduction
+
+This report is an exploration of data provided by the United States Department of Transportation during the year 2011. More specifically, we are going to answer the folllowing questions:
+
+1. What is the mean flight time?
+2. What is the mean arrival and departure delay for all carriers?
+3. (a) Using a pirateplot, what is the distribution of arrival delay for all carriers? (b) Is there a difference between American Airlines and Continental Airlines?
+4. Do departure time, distance and departure delay predict arrival delay? 
+5. If so, construct a function called “what.are.my.chances” that provides customers the service of calculating their expected arrival delay according to their departure time, distance and departure delay.
+6. Is there a correlation between department delay and arrival delay? 
+7. Does the correlation still exist when looking only at Delta Airlines (“DL”) and SkyWest (“OO”)? Show the results in a plot.
+8. Show the distribution of arrival delay for fligths that were going to Los Angeles, Philadelphia and Atlanta in a histogram.
+
+
+## Setup the software
+
+The software used for the development of the study and the writing of the report is R[1]. The first step is to define the work directory and to load the libraris: yarrr[2] and dplyr[3].  
+
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
+# Directory
+setwd("~/Downloads")
+# Will works for me on a mac with the project data in the downloads folder
+```
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(plotly)
+library(janitor)
+library(lubridate)
+```
+
+
+## Importing Data from the Department of Transportation 
+
+We got the dataset from the website of Nathaniel D. Phillips   (http://nathanieldphillips.com/wp-content/uploads/2015/04/Flights.txt) in January 2017. The dataset covers the full year 2011, and the variables selected for this dataset  are:
+
+1. **date**: The date of the observed flight
+2. **hour**: The hour of the depature time
+3. **minute**: The minute of the departure time
+4. **dep**: The departure time of the flight
+5. **arr**: The arrival time of the flight
+6. **dep_delay**: The departure delay of the flight in minutes
+7. **arr_delay**: The arrival delay of the flight in minutes
+8. **carrier**: The carrier of the flight. The carrier is indicated as a abbreviation used by the International Air Transport Aassociation. (e.g AA = American Airlines, C0 = Continental Airlines,...)
+9. **flight**: The flight number that allows the identification of the flight
+10. **dest**: The abbreviation of the destination airport
+11. **plane**: The plane number. It contains information about the carrier company and the plane model.
+12. **cancelled**: Indicates whether the flight was cancelled or not. 0 indicates no cancellation, 1 indicates a cancellation.
+13. **time**: The duration of the flight in minutes.
+14. **dist**: The distance of the flight in miles.
+
+The first step is to load the dataset in the system, and check the names of the variables. 
+
+We can see that the names of the variables are right.
+
+```{r}
+myDataRead <- read.csv('dataset.csv',sep = ';')
+
+```
+
+
+
+## Cleaning Data
+
+We are going to check if we have loaded all information from the file.
+
+
+
+<h2>Run clean data function</h2>
+
+```{r clean_data}
+
+
+
+clean_data <- function (myData) {
+  
+  ### names of the variables
+  myData <- myData %>% clean_names()
+  
+  ### remove empty rows and columns
+  myData <- myData %>% remove_empty(which = c("rows","cols"))
+  
+  ### remove constant columns
+  # myData <- myData %>% remove_constant()
+  
+  ### Check duplicates
+  # myData %>% get_dupes(id)
+  # myData <- myData %>% distinct()
+  # myData %>% get_dupes(id)
+  # myData <- myData %>% filter (number_days!=63545)
+  # myData %>% get_dupes(id)
+  
+  ### Check n's
+  # myData %>% tabyl(gender)
+  # myData %>% select (gender) %>% unique () 
+  # myData %>% select (gender) %>% unique () %>% count()
+  
+  ### optional code for changing names of variables in records
+  # ifelse (myData$gender == "Female", "female", myData$gender)
+  
+  ### rounding
+  ### Check the rounds of numbers
+
+  # myData$anual_salary
+  # myData$anual_salary %>% round() # “banker’s rounding”: halves are rounded to the nearest even number.
+  # myData$anual_salary %>% round_half_up()
+  
+  ### Check the NA
+
+  # myData$gender <- ifelse (myData$id == "6", "female", myData$gender)
+  # myData$gender <- ifelse (is.na(myData$gender), "female", myData$gender)
+  
+  # myData %>% complete.cases() %>% tabyl
+  
+  # mydata <- mydata %>% filter(!is.na(anual_salary))
+  # mydata <- mydata %>% filter (anual_salary != "NA")
+  # mydata <- mydata %>% drop_na()
+  # mydata <- mydata %>% drop_na(anual_salary)
+  
+  
+  ### Check the types
+  
+  # mydata %>% str()
+  # mydata$id <- mydata$id %>% as.integer()
+  # mydata
+  # mydata$gender <- mydata$gender %>% as.factor()
+}
+
+  clean_data(myDataRead)
+
+```
+
+THE REST OF THIS RMD IS FROM VICENC'S GUIDE ON HOW TO CREATE A REPORT
+
+```{r}
+# nrow(flight.data.na)
+# ncol(flight.data.na)
+```
+
+There are 227,496 rows and 14 columns in the dataset. The right numbers according to the data source.
+
+Now, we are going to check if the type of the variables is the right one. 
+
+```{r}
+# str(flight.data.na)
+```
+
+We can see that the type of the variables fits to the expected one.
+
+Now, we are going to check if the data at the beginning or at the end of the dataset is right.
+
+```{r}
+# # Let's see the top of the data 
+# head(flight.data.na[, c(3, 4, 5)], 3)
+# 
+# # Let's see the bottom of the data 
+# tail(flight.data.na[, c(3, 4, 5)], 3)
+```
+
+Theses cases are right.
+
+Finally, we are going to check if there is any outlier in the values we have. 
+
+```{r}
+# summary (flight.data.na)
+```
+
+From the results, we can see that there are many cases with NA's. We will have to resolve this problem. So, we are going to clean (omit) the data from NA values and recode the 'cancelled' column (using indexing and reassignment) for purposes of better understanding. 
+
+```{r}
+# # Remove incomplete cases, facilitates calculation of statistics like mean, median, sd, etc.
+# flight.data <- na.omit(flight.data.na) 
+# 
+# # Recoding 'cancelled'
+# log.vec <- flight.data$cancelled == "0" 
+# flight.data$cancelled[log.vec] <- "No"
+```
+
+
+## What is the mean flight time?
+
+We are going to calculate the mean, median and stadard deviation of flight time.
+
+```{r}
+# mean(flight.data$time)
+# median(flight.data$time)
+# sd(flight.data$time)
+```
+
+The mean flight time is 108.1 minutes with a standard deviation of 56.5 minutes. The median is at 107 minutes.
+
+Additionally, We are going show these result in a histogram.
+
+```{r}
+# hist(x = flight.data$time, main = "Flight time", xlab = "Time in minutes", ylab = 
+#        "Number of flights", ylim = c(0, 40000), xlim = c(0, 600), breaks = 20, border = "blue")
+# 
+# # Add the mean and median lines
+# abline(v = mean(flight.data$time), col = "coral", lwd = 2.5)
+# abline(v = median(flight.data$time), col = "lightgreen", lty = 4, lwd = 2.5)
+```
+
+## What is the mean departure and arrival delay for all carriers?
+
+We are going to calculate the mean departure and arrival delay using dplyr(). 
+
+```{r}
+# flight.data %>% group_by(carrier) %>% summarise(dep_delay.mean = mean(dep_delay), 
+#                                                 arr_delay.mean = mean(arr_delay))
+```
+
+The mean departure and arrival delay for each carrier is depicted in the table above.
+
+## Is there a difference between American Airlines and Continental Airlines?
+
+Using a pirateplot, what is the distribution of arrival delay for all carriers? I am going to show the distribution of arrival delay in a pirateplot.
+
+```{r}
+# pirateplot(arr_delay ~ carrier, data = flight.data, main = "Arrival Delay ", xlab = "Carrier", 
+#            ylab = "Arrival Delay in minutes", pal = "xmen")
+```
+
+we are going to calculate a t-test whether the mean arrival delay for AA and CO is diffrent from each other.
+
+```{r}
+# t.test(arr_delay ~ carrier, data = flight.data, subset = carrier %in% c("AA", "CO"))
+```
+
+There is a significant difference between the average arrival delay between American Airlines and Continental, t(3346.8) = -7.75, p < 0.01.
+
+## Do departure time, distance and departure delay predict arrival delay?
+
+We are going to calculate a linear regression with arrival delay as dependent variable and departure time, distance and departure delay as independent variables.
+
+```{r}
+# arr_delay.model <- (lm(arr_delay ~ dep + dist + dep_delay, data = flight.data))
+# summary(arr_delay.model)
+```
+
+There is a significant negative correlation for departure time and distance with arrival delay, p < 0.01. There is a significant positive correlation between departure delay and arrival delay, p < 0.01.
+
+## If so, construct a function called “what.are.my.chances” that provides customers the service of calculating their expected arrival delay according to their departure time, distance and departure delay
+
+We are going to construct a function that gives the predicted arrival delay based on the arr_delay.model and departure time, distance and departure delay.
+
+```{r}
+# what.are.my.chances <- function(dep, dist, dep_delay){
+#   new.values <- data.frame("dep" = dep, "dist" = dist, "dep_delay" = dep_delay)
+#   output <- predict(arr_delay.model, newdata = new.values)
+#   return(output)
+# }
+```
+
+We are going to test the funtion with 3 examples:
+
+```{r}
+# what.are.my.chances(dep = 1400, dist = 2000, dep_delay= 4)
+```
+In this case, we predict a delay of -1.057727.
+
+```{r}
+# what.are.my.chances(dep = 2300, dist = 9000, dep_delay = 120)
+```
+In this case, we predict a delay of 97.80979.
+
+```{r}
+# what.are.my.chances(dep = 2300, dist = 9000, dep_delay = 60)
+```
+In this case, we predict a delay of 37.97602.
+
+## Is there a correlation between departure delay and arrival delay?
+
+We are going to claculate a correlation test and show the result in a scatterplot.
+
+```{r}
+# cor.test(~ dep_delay + arr_delay, data = flight.data)
+```
+
+Here there is a significant positive correlation (r = 0.9292181) between departure delay and arrival delay, t(223870) = 1189.9, p < 0.01., so we expect that the points form a clear straight line. Let's see the scatterplot.
+
+```{r}
+# # Showing the result in a plot
+# plot(flight.data$dep_delay, flight.data$arr_delay, pch = 1, col = "darksalmon", xlab = 
+#        "Department Delay", ylab = "Arrival Delay", main = "Deparment Delay and Arrival Delay")
+```
+
+The scatterplot supports the high value of the correlation.
+
+INCLUDED HERE ARE A FEW PLOT EXAMPLES GGPLOT2
+
+<h2>Graph Stuff</h2>
+
+```{r}
+# p <- newFlights %>% select(name) %>% 
+#   ggplot(aes(x=name,fill=name)) +
+#   geom_histogram(stat='count') +
+#   theme_minimal() +
+#   theme(
+#     axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+#     axis.title.x = element_blank(),
+#     legend.title = element_blank(),
+#     legend.position = "none"
+#     ) +
+#   labs(y="Count") 
+# 
+# 
+# p + scale_color_hue(h = c(0, 90), l = 70, c = 30)
+```
+
+## The Scatterplot
+
+```{r, fig.cap="A Scatterplot"}
+# myData %>% sample_frac(.1) %>%
+#   ggplot(aes(x=age, y=balance, color = marital, size = campaign, shape = contact)) +
+#   geom_point(stat = 'identity') +
+#   theme_minimal()
+
+```
+
+
+## Does the correlation still exist when looking only at Delta Airlines (“DL”) and SkyWest (“OO”)?
+
+We aregoing to repeat the correlation test but restrict the analysis to only Delta Airlines and SkyWest by using subset.
+
+```{r}
+# cor.test(~ dep_delay + arr_delay, data = flight.data, subset = carrier %in% c("DL", "OO"))
+```
+
+The correlation still exists also when only looking at Delta Airlines and SkyWest (r = 0.92), t(18370) = 326.25, p < 0.01
+
+## Show the distribution of arrival delay for fligths that were going to Los Angeles, Philadelphia and Atlanta in a histogram
+
+We are going construct a loop to show the arrival delay for flights which were going to LAX, PHL and ATL - each in a seperate histogram.
+
+```{r}
+# par(mfrow = c(1, 3))
+# for(destination.i in c("LAX", "PHL", "ATL")){
+#   data.temp <- subset(flight.data, dest == destination.i)
+#   hist(data.temp$arr_delay, 
+#        main = destination.i,
+#        xlab = "Arrival Delay",
+#        xlim = c(-100, 500),
+#        col = "papayawhip",
+#        breaks = 15)
+# }
+```
+
+
+## Conclusions
+
+From our analysis, we have some interesting results:
+
+* The mean flight time for all flights was about 108 minutes.
+* There is a difference in arrival delay between carriers.
+* American Airlines and Continental Airlines were examined more closely and showed a significant * difference in arrival delay, Continental being more late.
+* Departure time, distance and departure delay were shown to predict arrival delay.
+* The function “what.are.my.chances” could provide a customer service, telling people what their expected arrival delay would be.
+* As could be expected, there is a strong correlation between departure delay and arrival delay.
+* There is a difference between destination airports concerning the distribution of delayed flights. The histograms also show that still a lot of flights reach their destination on time or even earlier.
+
+For these reasons, we suggest the following ideas to imrpove the flight in USA:
+
+* First idea...
+* Second idea...
+
+
+## References
+
+[1] R Core Team (2016). R: A language and environment for statistical computing.
+  R Foundation for Statistical Computing, Vienna, Austria. URL   https://www.R-project.org/.
+
+[2] Nathaniel Phillips (2017). yarrr: A Companion to the e-Book "YaRrr!: The Pirate's Guide to R". R package version 0.1.5.   https://CRAN.R-project.org/package=yarrr
+
+[3] Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2018). dplyr: A Grammar of Data Manipulation. R package version 0.7.5. https://CRAN.R-project.org/package=dplyr
+
