@@ -3,9 +3,9 @@ title: "ProjectRmdTools"
 author: "Will Rains"
 date: "11/3/2021"
 output: 
-  html_document:
-    theme: darkly
-    highlight: espresso
+    prettydoc::html_pretty:
+    theme: hpstr
+    highlight: github
 ---
 ## Introduction
 
@@ -66,7 +66,7 @@ The first step is to load the dataset in the system, and check the names of the 
 We can see that the names of the variables are right.
 
 ```{r}
-myDataRead <- read.csv('dataset.csv',sep = ';')
+myData <- read.csv('dataset.csv',sep = ';')
 
 ```
 
@@ -87,28 +87,28 @@ We are going to check if we have loaded all information from the file.
 clean_data <- function (myData) {
   
   ### names of the variables
-  myData <- myData %>% clean_names()
+  #myData <- myData %>% clean_names()
   
   ### remove empty rows and columns
   myData <- myData %>% remove_empty(which = c("rows","cols"))
   
   ### remove constant columns
-  # myData <- myData %>% remove_constant()
+  myData <- myData %>% remove_constant()
   
   ### Check duplicates
-  # myData %>% get_dupes(id)
-  # myData <- myData %>% distinct()
-  # myData %>% get_dupes(id)
-  # myData <- myData %>% filter (number_days!=63545)
-  # myData %>% get_dupes(id)
+  #myData %>% get_dupes(id)
+  #myData <- myData %>% distinct()
+  #myData %>% get_dupes(id)
+  #myData <- myData %>% filter (number_days!=63545)
+  #myData %>% get_dupes(id)
   
   ### Check n's
-  # myData %>% tabyl(gender)
-  # myData %>% select (gender) %>% unique () 
-  # myData %>% select (gender) %>% unique () %>% count()
+  #myData %>% tabyl(gender)
+  #myData %>% select (gender) %>% unique () 
+  #myData %>% select (gender) %>% unique () %>% count()
   
   ### optional code for changing names of variables in records
-  # ifelse (myData$gender == "Female", "female", myData$gender)
+  #ifelse (myData$gender == "Female", "female", myData$gender)
   
   ### rounding
   ### Check the rounds of numbers
@@ -119,8 +119,8 @@ clean_data <- function (myData) {
   
   ### Check the NA
 
-  # myData$gender <- ifelse (myData$id == "6", "female", myData$gender)
-  # myData$gender <- ifelse (is.na(myData$gender), "female", myData$gender)
+  # myData$Gender <- ifelse (myData$id == "6", "female", myData$Gender)
+  # myData$Gender <- ifelse (is.na(myData$Gender), "female", myData$Gender)
   
   # myData %>% complete.cases() %>% tabyl
   
@@ -138,7 +138,7 @@ clean_data <- function (myData) {
   # mydata$gender <- mydata$gender %>% as.factor()
 }
 
-  clean_data(myDataRead)
+  clean_data(myData)
 
 ```
 
