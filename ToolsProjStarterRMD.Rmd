@@ -9,7 +9,9 @@ output:
 ---
 ## Introduction
 
-This report is an exploration of data provided by the United States Department of Transportation during the year 2011. More specifically, we are going to answer the folllowing questions:
+REPLACE
+
+This report is an exploration of data provided by the United States Department of Transportation during the year 2011. More specifically, we are going to answer the following questions:
 
 1. What is the mean flight time?
 2. What is the mean arrival and departure delay for all carriers?
