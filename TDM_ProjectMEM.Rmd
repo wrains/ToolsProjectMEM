@@ -2,12 +2,112 @@
 title: "TDM_ProjectMEM"
 author: "Roger Serra, Yassine Khalili, Kerim Kiliç, Michael Rains"
 date: "10/11/2021"
-output: html_document
+output: 
+    prettydoc::html_pretty:
+    theme: hpstr
+    highlight: github
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+library(lubridate)
 ```
 
 ## Introduction
-Test Code
+
+<insert intro here>
+
+
+The first step is to load the dataset in the system, and check the names of the variables.
+
+```{r}
+myData <- read.csv('dataset.csv',sep = ';')
+
+```
+
+
+### Let's examine the dataset
+
+
+
+```{r}
+skimr::skim(myData)
+```
+
+<insert explanation of variables here>
+
+
+
+## Cleaning Data
+
+We are going to check if we have loaded all information from the file.
+
+
+
+<h2>Run clean data function</h2>
+
+
+
+```{r clean_data}
+
+
+
+clean_data <- function (myData) {
+  
+  ### names of the variables
+  myData <- myData %>% clean_names()
+  
+  ### remove empty rows and columns
+  myData <- myData %>% remove_empty(which = c("rows","cols"))
+  
+  ### remove constant columns
+  myData <- myData %>% remove_constant()
+  
+  ### Check duplicates
+  #myData %>% get_dupes(id)
+  myData <- myData %>% distinct()
+  #myData %>% get_dupes(id)
+  #myData <- myData %>% filter (number_days!=63545)
+  #myData %>% get_dupes(id)
+  
+  ### Check n's
+  #myData %>% tabyl(gender)
+  #myData %>% select (gender) %>% unique () 
+  #myData %>% select (gender) %>% unique () %>% count()
+  
+  ### optional code for changing names of variables in records
+  #ifelse (myData$gender == "Female", "female", myData$gender)
+  
+  ### rounding
+  ### Check the rounds of numbers
+
+  # myData$anual_salary
+  # myData$anual_salary %>% round() # “banker’s rounding”: halves are rounded to the nearest even number.
+  # myData$anual_salary %>% round_half_up()
+  
+  ### Check the NA
+
+  # myData$Gender <- ifelse (myData$id == "6", "female", myData$Gender)
+  # myData$Gender <- ifelse (is.na(myData$Gender), "female", myData$Gender)
+  
+  myData %>% complete.cases() %>% tabyl
+  
+  # mydata <- mydata %>% filter(!is.na(anual_salary))
+  # mydata <- mydata %>% filter (anual_salary != "NA")
+  myData <- myData %>% drop_na()
+  # mydata <- mydata %>% drop_na(anual_salary)
+  
+  
+  ### Check the types
+  
+  myData %>% str()
+  # mydata$id <- mydata$id %>% as.integer()
+  # mydata
+  # mydata$gender <- mydata$gender %>% as.factor()
+}
+
+  clean_data(myData)
+
+```
