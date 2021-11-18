@@ -34,9 +34,12 @@ myData <- read.csv('dataset.csv',sep = ';')
 
 ```{r}
 skimr::skim(myData)
+
+glimpse(myData)
 ```
 
 <insert explanation of variables here>
+
 
 
 
@@ -111,3 +114,41 @@ clean_data <- function (myData) {
   clean_data(myData)
 
 ```
+
+Will's last nine vars
+
+```{r}
+# get distro function
+getDistro <- function(varss) {
+  return(myData %>% select(varss) %>% tabyl(varss))
+}
+
+willsVars <- names(myData)[(length(names(myData))-8):length(names(myData))]
+length(willsVars)
+
+for (vars in willsVars) {
+  print(getDistro(vars))
+}
+
+```
+<br>
+From this output we see that we need to clean up **city** variable - we will convert Londres and Barcelone into London and Barcelona respectively.
+<br>
+```{r,include=FALSE}
+myData$city <- ifelse (myData$city == "Barcelone", "Barcelona", myData$city)
+
+myData$city <- ifelse (myData$city == "Londres", "London", myData$city)
+
+myData %>% select(city) %>% tabyl(city)
+```
+
+We've now corrected this error. All of the other variables here are just displaying NA's and we will simply filter out NA's when we do any analysis on the different variables.
+
+Some interesting notes we can see is that there is clearly a Barcelona branch and a London branch as well.
+
+Throughout our analysis it will be of value to see if there is a divergence anywhere between branhces for the key metrics.
+
+```{r}
+
+```
+
