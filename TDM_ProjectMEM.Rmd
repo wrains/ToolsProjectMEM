@@ -35,7 +35,11 @@ myData <- read.csv('dataset.csv',sep = ';')
 ```{r}
 skimr::skim(myData)
 
-glimpse(myData)
+glimpse(myData) 
+
+tail(myData)
+
+
 ```
 
 <insert explanation of variables here>
@@ -123,10 +127,10 @@ getDistro <- function(varss) {
   return(myData %>% select(varss) %>% tabyl(varss))
 }
 
-willsVars <- names(myData)[(length(names(myData))-8):length(names(myData))]
-length(willsVars)
+dataVars <- names(myData)[1:length(names(myData))]
+length(dataVars)
 
-for (vars in willsVars) {
+for (vars in dataVars) {
   print(getDistro(vars))
 }
 
