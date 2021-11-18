@@ -57,7 +57,7 @@ We are going to check if we have loaded all information from the file.
 
 
 
-clean_data <- function (myData) {
+#clean_data <- function (myData) {
   
   ### names of the variables
   myData <- myData %>% clean_names()
@@ -109,9 +109,9 @@ clean_data <- function (myData) {
   # mydata$id <- mydata$id %>% as.integer()
   # mydata
   # mydata$gender <- mydata$gender %>% as.factor()
-}
+#}
 
-  clean_data(myData)
+#  clean_data(myData)
 
 ```
 
@@ -149,6 +149,20 @@ Some interesting notes we can see is that there is clearly a Barcelona branch an
 Throughout our analysis it will be of value to see if there is a divergence anywhere between branhces for the key metrics.
 
 ```{r}
+# Cleaning the gender variable
+myData$gender <- ifelse(myData$gender == "female", "Female", myData$gender)
+myData$gender <- ifelse(myData$gender == "female ", "Female", myData$gender)
+myData$gender <- ifelse(myData$gender == "male", "Male", myData$gender)
+```
 
+```{r}
+# Clean job involvement variable, any job involvement larger than 4 becomes 4
+myData$job_involvement <- ifelse(myData$job_involvement>4, 4, myData$job_involvement)
+```
+
+```{r}
+# Clean marital status data
+myData$marital_status <- myData$marital_status <- ifelse(myData$marital_status == "Marrie", "Married", myData$marital_status)
+myData$marital_status <- myData$marital_status <- ifelse(myData$marital_status == "Soltero", "Single", myData$marital_status)
 ```
 
