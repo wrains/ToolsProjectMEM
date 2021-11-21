@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(janitor)
 library(lubridate)
+library(gridExtra)
 ```
 
 ## Introduction
@@ -207,7 +208,7 @@ summary(myData$job_involvement)
 
 We can see the composition of the marital status variable using a simple bar chart as shown below:
 
-```{r}
+```{r,echo=FALSE,message=FALSE}
 myData$marital_status <- as.character(myData$marital_status)
 ggplot(myData, aes(x=marital_status)) + geom_bar() 
 ```
@@ -234,9 +235,82 @@ myData$marital_status <- myData$marital_status <- ifelse(myData$marital_status =
 myData$marital_status <- myData$marital_status <- ifelse(myData$marital_status == "Soltero", "Single", myData$marital_status)
 ```
 
-```{r}
+```{r,echo=FALSE,message=FALSE}
 myData$marital_status <- as.character(myData$marital_status)
 ggplot(myData%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar() 
 ```
 
 We can see that the variable marital status has been cleaned to Divorced, Married, and Single
+
+# Plots of gender across different variables
+
+The first plot is to show the composition of gender in the company. It shows that more men work in the company compared to women.
+```{r,echo=FALSE,message=FALSE}
+ggplot(myData, aes(x=gender)) + geom_bar() + labs(title="Gender of employees")
+```
+
+The second plot is to show the environmental satisfaction of men versus women. The plot shows us that the distribution of environmental satisfaction is similar between men and women.
+
+```{r,echo=FALSE,message=FALSE}
+env_satis_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=environment_satisfaction)) + geom_bar() + labs(title = "Environmental satisfaction men",x="Environmental Satisfaction")
+env_satis_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=environment_satisfaction)) + geom_bar() + labs(title = "Environmental satisfaction women",x="Environmental Satisfaction")
+grid.arrange(env_satis_M, env_satis_F, ncol=2)
+```
+
+The third plot is to show the distribution of job involvement between men and women. It shows that the distribution of job involvement is similar between men and women.
+
+```{r,echo=FALSE,message=FALSE}
+job_inv_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_involvement)) + geom_bar() + labs(title = "Job involvement men",x="Job involvement factor")
+job_inv_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_involvement)) + geom_bar() + labs(title = "Job involvement women",x= "Job involvement factor")
+grid.arrange(job_inv_M, job_inv_F, ncol=2)
+```
+
+The next plot is to show the differences between the job level of men and women. It shows that the distribution looks similar, however, in men most of the men have a job level of 1 and the second highest count of job level is level 2. While most women have a job level of 1, and second most have a job level of level 2.
+
+```{r,echo=FALSE,message=FALSE}
+job_lvl_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_level)) + geom_bar() + labs(title = "Job level men", x="Job level factor")
+job_lvl_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_level)) + geom_bar() + labs(title = "Job level women", x="Job level factor")
+grid.arrange(job_lvl_M, job_lvl_F, ncol=2)
+```
+
+The next plot is to show the differences between the marital status between men and women. The plots show similar composition of divorced, married and single people in the company. Most of both men and women are married, second comes the employees that are single, and lastly the employees that are divorced.
+
+```{r,echo=FALSE,message=FALSE}
+marital_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar() + labs(title = "Marital status men", x="Marital status")
+marital_F <- ggplot(myData%>%filter(gender=="Female")%>%filter(!is.na(gender))%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar() + labs(title = "Marital status women", x="Marital status")
+grid.arrange(marital_M, marital_F, ncol=2)
+```
+
+The following plot is to show the difference is number of managers among men and women. You can see that within this company more men are in the position of manager compared to women.
+```{r,echo=FALSE,message=FALSE}
+managers_male <- myData%>%filter(gender=="Male")%>%filter(job_role=="Manager")%>%count()
+managers_female <- myData%>%filter(gender=="Female")%>%filter(job_role=="Manager")%>%count()
+temp_gender <- c("Male", "Female")
+temp_count <- c(managers_male, managers_female)
+manager_data <- data.frame(temp_gender,temp_count)
+ggplot(manager_data, aes(x=temp_gender,y=temp_count)) + geom_bar(stat="identity")+labs(title="Number of managers betwen men and women",x="Gender",y="number of managers")
+```
+
+The next plot is to show the average hourly wage between men and women. It shows that both men and women earn pretty much the same average hourly wage.
+
+```{r,echo=FALSE,message=FALSE}
+temp <- myData%>%filter(gender=="Male")
+male_hourly <- mean(temp$hourly_rate)
+temp <- myData%>%filter(gender=="Female")
+female_hourly <- mean(temp$hourly_rate)
+temp_gender <- c("Male","Female")
+temp_avg_hourly_rates <- c(male_hourly,female_hourly)
+hourly_df <- data.frame(temp_gender,temp_avg_hourly_rates)
+ggplot(hourly_df, aes(x=temp_gender,y=temp_avg_hourly_rates)) + geom_bar(stat="identity")+labs(title="Average hourly wage between men and women",x="Gender",y="Average hourly wage")
+```
+
+The next four plots show us the education level and education field between men and women in the company. It shows both a very similar distribution in education level and education field. Both men and women have a majority of a education level 3 and for educational field both for men and women the majority has a major in life sciences.
+
+```{r,echo=FALSE,message=FALSE}
+edu_lvl_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education)) + geom_bar() + labs(title = "Education level men", x="Education level")
+edu_lvl_F <- ggplot(myData%>%filter(gender=="Female")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education)) + geom_bar() + labs(title = "Education level women", x="Education level")
+edu_field_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field)) + geom_bar() + labs(title = "Education field men", x="Education field")+coord_flip()
+edu_field_F <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field)) + geom_bar() + labs(title = "Education field men", x="Education field")+coord_flip()
+grid.arrange(edu_lvl_M, edu_lvl_F,edu_field_M,edu_field_F, ncol=2)
+```
+
