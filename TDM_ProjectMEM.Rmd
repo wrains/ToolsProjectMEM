@@ -152,17 +152,81 @@ Some interesting notes we can see is that there is clearly a Barcelona branch an
 
 Throughout our analysis it will be of value to see if there is a divergence anywhere between branhces for the key metrics.
 
+### Cleaning gender data
+In order to detect the mismatch in data we will simply plot a barchart of gender on the x-axis, and it will show us the composition of the gender variable.
+```{r}
+ggplot(myData, aes(x=gender)) + geom_bar() 
+```
+
+After plotting the barchart we can see that there are different ways in which the gender is written, summed up below:
+
+- female, all in lower case letters;
+- Female, with the first letter in upper case;
+- female<space>, all lower case letters and a space as the last character;
+- male, all in lower case letters;
+- Male, with the first letter in upper case;
+
+We choose to clean this data to Male and Female, with the syntax being, the first letter upper case. In order to do this we need to run three ifelse loops as shown below:
+
 ```{r}
 # Cleaning the gender variable
+myData$gender <- as.character(myData$gender)
 myData$gender <- ifelse(myData$gender == "female", "Female", myData$gender)
 myData$gender <- ifelse(myData$gender == "female ", "Female", myData$gender)
 myData$gender <- ifelse(myData$gender == "male", "Male", myData$gender)
 ```
 
+After running the code above the gender is cleaned up and is now only either Male or Female as shown below;
+
+```{r}
+ggplot(myData, aes(x=gender)) + geom_bar() 
+```
+
+### Cleaning the job involvement data
+
+We can look at the composition of job involvement data by simply looking at the summary as shown below:
+
+```{r}
+summary(myData$job_involvement)
+```
+
+It shows us that the minium value is 1, which is fine. However the maximum value is 200. Looking at the dataframe we see that the values should range between 1 and 4, therefore any value larger than 4 we will change to 4 using the code below:
+
 ```{r}
 # Clean job involvement variable, any job involvement larger than 4 becomes 4
 myData$job_involvement <- ifelse(myData$job_involvement>4, 4, myData$job_involvement)
 ```
+
+When we run summary again we can see that the maximum is now 4.
+
+```{r}
+summary(myData$job_involvement)
+```
+
+### Cleaning marital status variable
+
+We can see the composition of the marital status variable using a simple bar chart as shown below:
+
+```{r}
+myData$marital_status <- as.character(myData$marital_status)
+ggplot(myData, aes(x=marital_status)) + geom_bar() 
+```
+
+The bar chart shows us that the data of marital_status is grouped in the following way:
+
+- <empty>
+- Divorced
+- Marrie
+- Married
+- Single
+- Soltero
+
+In order to clean this data we determine the following syntax:
+- Divorced
+- Married
+- Single
+
+In order to reach this syntax we need to run the following two ifelse loops:
 
 ```{r}
 # Clean marital status data
@@ -170,3 +234,9 @@ myData$marital_status <- myData$marital_status <- ifelse(myData$marital_status =
 myData$marital_status <- myData$marital_status <- ifelse(myData$marital_status == "Soltero", "Single", myData$marital_status)
 ```
 
+```{r}
+myData$marital_status <- as.character(myData$marital_status)
+ggplot(myData%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar() 
+```
+
+We can see that the variable marital status has been cleaned to Divorced, Married, and Single
