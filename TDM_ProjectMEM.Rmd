@@ -18,13 +18,28 @@ library(gridExtra)
 
 ## Introduction
 
-<insert intro here>
+After meeting with the CEO it is apparent to us that gender equity is extremely important to her and she has some serious concerns regarding the differences between the **Barcelona** and **London** branches of the company. 
+
+### European Gender Equity Research and Analysis
+
+We will first analyze this issue based on some data we have on the status of gender equity in the workforce in Europe to understand the broader economic and societal context for which the business is operating within.
+
+
+###############################################################################################################
+<externally resourced regarding gender pay gap and strides that still need to be made in Europe in this regard>
+
+<include some plots and other text and conclusions>
+###############################################################################################################
+
+
+
 
 
 The first step is to load the dataset in the system, and check the names of the variables.
 
 ```{r}
 myData <- read.csv('dataset.csv',sep = ';')
+myDataOrig <- myData
 
 ```
 
@@ -59,7 +74,7 @@ tail(myData)
 
 ## Cleaning Data
 
-We are going to check if we have loaded all information from the file.
+We are going to check if we have loaded all information from the file and clean the dataset. 
 
 
 
@@ -129,7 +144,6 @@ We are going to check if we have loaded all information from the file.
 
 ```
 
-Will's last nine vars
 
 ```{r}
 # get distro function
@@ -159,7 +173,7 @@ myData$city <- ifelse (myData$city == "Londres", "London", myData$city)
 myData %>% select(city) %>% tabyl(city)
 ```
 
-We've now corrected this error. All of the other variables here are just displaying NA's and we will simply filter out NA's when we do any analysis on the different variables.
+We've now corrected this error.
 
 Some interesting notes we can see is that there is clearly a Barcelona branch and a London branch as well.
 
@@ -254,6 +268,10 @@ ggplot(myData%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar()
 
 We can see that the variable marital status has been cleaned to Divorced, Married, and Single
 
+### Other Considerations
+
+Other variables here are just displaying NA's and we will simply filter out NA's when we do any analysis on the different variables.
+
 # Plots of gender across different variables
 
 The first plot is to show the composition of gender in the company. It shows that more men work in the company compared to women.
@@ -329,7 +347,7 @@ grid.arrange(edu_lvl_M, edu_lvl_F,edu_field_M,edu_field_F, ncol=2)
 
 # Branch Analysis
 
-#### We see that there are clearly two company branches in the dataset Barcelona and London branches - let's explore some plots to understand the differences.
+#### As stated by the CEO that the large part of her concern is regarding differences in structure between the two branches. Let's explore some plots to understand the differences.
 
 
 Let's start by looking at the split of the company between these two branches.
@@ -345,8 +363,44 @@ myData %>% group_by(city) %>% summarise(cityCount = n()) %>%
 
 ```
 
+We can see the London is the larger branch and seems to maybe be the original branch if we can infer that from pure count of employees. This could make intuitive sense given what the CEO said about desiring Barcelona to match London.
+
+
+Next let's look at the split of gender between the two companies.
 
 ```{r}
+totalBCN <- myData %>% filter(city == "Barcelona") %>% pull(city) %>% length()
+totalLDN <- myData %>% filter(city == "London") %>% pull(city) %>% length()
+
+myData %>% group_by(city,gender) %>% count(gender) %>% mutate(pct = prop.table(n)) %>% 
+  ggplot(aes(x=gender,y=n,fill = city)) +
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_label(aes(label = n), show.legend = FALSE,
+             position = position_dodge(width = .85),) +
+  geom_label(aes(label = scales::percent(pct)), show.legend = FALSE,
+             position = position_dodge(width = .85),
+             vjust = 2.5) +
+  theme_minimal() + 
+  labs (y = "Count", x="Gender", title="Gender Count by Branch")
+
 
 ```
 
+
+Interestingly comparing raw counts of females and males across branches there are actually more females proportional to the branch total employees in Barcelona than London.
+
+Average wage by gender by city 
+```{r}
+
+# totalBCN <- myData %>% filter(city == "Barcelona") %>% pull(city) %>% length()
+# totalLDN <- myData %>% filter(city == "London") %>% pull(city) %>% length()
+# mBCN
+# wBCN
+# mLDN
+# wLDN
+
+
+```
+
+
+Discrepancies by department same as above
