@@ -9,21 +9,38 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,message = F,warning = F)
 library(tidyverse)
 library(janitor)
 library(lubridate)
+library(gridExtra)
+library(broom)
 ```
 
 ## Introduction
 
-<insert intro here>
+After meeting with the CEO it is apparent to us that gender equity is extremely important to her and she has some serious concerns regarding the differences between the **Barcelona** and **London** branches of the company. 
+
+### European Gender Equity Research and Analysis
+
+We will first analyze this issue based on some data we have on the status of gender equity in the workforce in Europe to understand the broader economic and societal context for which the business is operating within.
+
+
+###############################################################################################################
+<externally resourced regarding gender pay gap and strides that still need to be made in Europe in this regard>
+
+<include some plots and other text and conclusions>
+###############################################################################################################
+
+
+
 
 
 The first step is to load the dataset in the system, and check the names of the variables.
 
 ```{r}
 myData <- read.csv('dataset.csv',sep = ';')
+myDataOrig <- myData
 
 ```
 
@@ -35,17 +52,30 @@ myData <- read.csv('dataset.csv',sep = ';')
 ```{r}
 skimr::skim(myData)
 
-glimpse(myData)
+glimpse(myData) 
+
+tail(myData)
+
+
 ```
 
-<insert explanation of variables here>
+### In the dataset we have the following variables 
 
+* stock_option_level - values from 0 to 3 indicating the level that the employee is receiving in stock options, 3 being the most stock options
+* total working years - the number of years that the employee has been working in their life
+* training times last year - number of times trained in the last year on any given topic
+* work_life_balance - values from 1 to 4 indicating how the employee has suggested their work life balance is
+* years_at_company - number of years the employee has been with the company
+* years_in_current_role - number of years in current role in the company. Will be important to understand if people are feeling stagnant in their growth.
+* years_since_last_promotion - number of years since last promotion
+* years_with_curr_manager - number of years with the current manager
+* city - the location of the employee. Which branch of the company the employee works at. 
 
 
 
 ## Cleaning Data
 
-We are going to check if we have loaded all information from the file.
+We are going to check if we have loaded all information from the file and clean the dataset. 
 
 
 
@@ -110,12 +140,11 @@ We are going to check if we have loaded all information from the file.
   # mydata
   # mydata$gender <- mydata$gender %>% as.factor()
 #}
-
+  myData <- myData[!(myData$num_companies_worked < 0),]
 #  clean_data(myData)
 
 ```
 
-Will's last nine vars
 
 ```{r}
 # get distro function
@@ -123,10 +152,13 @@ getDistro <- function(varss) {
   return(myData %>% select(varss) %>% tabyl(varss))
 }
 
-willsVars <- names(myData)[(length(names(myData))-8):length(names(myData))]
-length(willsVars)
+chosenPrintedDataset <- myData %>% select(-monthly_income,-monthly_rate,-hourly_rate,-employee_number,-daily_rate)
 
-for (vars in willsVars) {
+
+dataVars <-  names(chosenPrintedDataset)[1:length(names(chosenPrintedDataset))]
+length(dataVars)
+
+for (vars in dataVars) {
   print(getDistro(vars))
 }
 
@@ -142,27 +174,261 @@ myData$city <- ifelse (myData$city == "Londres", "London", myData$city)
 myData %>% select(city) %>% tabyl(city)
 ```
 
-We've now corrected this error. All of the other variables here are just displaying NA's and we will simply filter out NA's when we do any analysis on the different variables.
+We've now corrected this error.
 
 Some interesting notes we can see is that there is clearly a Barcelona branch and a London branch as well.
 
 Throughout our analysis it will be of value to see if there is a divergence anywhere between branhces for the key metrics.
 
+### Cleaning gender data
+In order to detect the mismatch in data we will simply plot a barchart of gender on the x-axis, and it will show us the composition of the gender variable.
+```{r}
+ggplot(myData, aes(x=gender)) + geom_bar() 
+```
+
+After plotting the barchart we can see that there are different ways in which the gender is written, summed up below:
+
+- female, all in lower case letters;
+- Female, with the first letter in upper case;
+- female<space>, all lower case letters and a space as the last character;
+- male, all in lower case letters;
+- Male, with the first letter in upper case;
+
+We choose to clean this data to Male and Female, with the syntax being, the first letter upper case. In order to do this we need to run three ifelse loops as shown below:
+
 ```{r}
 # Cleaning the gender variable
+myData$gender <- as.character(myData$gender)
 myData$gender <- ifelse(myData$gender == "female", "Female", myData$gender)
 myData$gender <- ifelse(myData$gender == "female ", "Female", myData$gender)
 myData$gender <- ifelse(myData$gender == "male", "Male", myData$gender)
 ```
+
+After running the code above the gender is cleaned up and is now only either Male or Female as shown below;
+
+```{r}
+ggplot(myData, aes(x=gender)) + geom_bar() 
+```
+
+### Cleaning the job involvement data
+
+We can look at the composition of job involvement data by simply looking at the summary as shown below:
+
+```{r}
+summary(myData$job_involvement)
+```
+
+It shows us that the minium value is 1, which is fine. However the maximum value is 200. Looking at the dataframe we see that the values should range between 1 and 4, therefore any value larger than 4 we will change to 4 using the code below:
 
 ```{r}
 # Clean job involvement variable, any job involvement larger than 4 becomes 4
 myData$job_involvement <- ifelse(myData$job_involvement>4, 4, myData$job_involvement)
 ```
 
+When we run summary again we can see that the maximum is now 4.
+
+```{r}
+summary(myData$job_involvement)
+```
+
+### Cleaning marital status variable
+
+We can see the composition of the marital status variable using a simple bar chart as shown below:
+
+```{r,echo=TRUE,message=FALSE}
+myData$marital_status <- as.character(myData$marital_status)
+ggplot(myData, aes(x=marital_status)) + geom_bar() 
+```
+
+The bar chart shows us that the data of marital_status is grouped in the following way:
+
+- <empty>
+- Divorced
+- Marrie
+- Married
+- Single
+- Soltero
+
+In order to clean this data we determine the following syntax:
+- Divorced
+- Married
+- Single
+
+In order to reach this syntax we need to run the following two ifelse loops:
+
 ```{r}
 # Clean marital status data
 myData$marital_status <- myData$marital_status <- ifelse(myData$marital_status == "Marrie", "Married", myData$marital_status)
 myData$marital_status <- myData$marital_status <- ifelse(myData$marital_status == "Soltero", "Single", myData$marital_status)
 ```
+
+```{r,echo=TRUE,message=FALSE}
+myData$marital_status <- as.character(myData$marital_status)
+ggplot(myData%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar() 
+```
+
+We can see that the variable marital status has been cleaned to Divorced, Married, and Single
+
+### Other Considerations
+
+Other variables here are just displaying NA's and we will simply filter out NA's when we do any analysis on the different variables.
+
+# Plots of gender across different variables
+
+The first plot is to show the composition of gender in the company. It shows that more men work in the company compared to women.
+```{r,echo=TRUE,message=FALSE}
+ggplot(myData, aes(x=gender)) + geom_bar() + labs(title="Gender of employees")
+```
+
+The second plot is to show the environmental satisfaction of men versus women. The plot shows us that the distribution of environmental satisfaction is similar between men and women.
+
+```{r,echo=TRUE,message=FALSE}
+env_satis_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=environment_satisfaction)) + geom_bar() + labs(title = "Environmental satisfaction men",x="Environmental Satisfaction")
+env_satis_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=environment_satisfaction)) + geom_bar() + labs(title = "Environmental satisfaction women",x="Environmental Satisfaction")
+grid.arrange(env_satis_M, env_satis_F, ncol=2)
+```
+
+The third plot is to show the distribution of job involvement between men and women. It shows that the distribution of job involvement is similar between men and women.
+
+```{r,echo=TRUE,message=FALSE}
+job_inv_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_involvement)) + geom_bar() + labs(title = "Job involvement men",x="Job involvement factor")
+job_inv_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_involvement)) + geom_bar() + labs(title = "Job involvement women",x= "Job involvement factor")
+grid.arrange(job_inv_M, job_inv_F, ncol=2)
+```
+
+The next plot is to show the differences between the job level of men and women. It shows that the distribution looks similar, however, in men most of the men have a job level of 1 and the second highest count of job level is level 2. While most women have a job level of 1, and second most have a job level of level 2.
+
+```{r,echo=TRUE,message=FALSE}
+job_lvl_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_level)) + geom_bar() + labs(title = "Job level men", x="Job level factor")
+job_lvl_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_level)) + geom_bar() + labs(title = "Job level women", x="Job level factor")
+grid.arrange(job_lvl_M, job_lvl_F, ncol=2)
+```
+
+The next plot is to show the differences between the marital status between men and women. The plots show similar composition of divorced, married and single people in the company. Most of both men and women are married, second comes the employees that are single, and lastly the employees that are divorced.
+
+```{r,echo=TRUE,message=FALSE}
+marital_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar() + labs(title = "Marital status men", x="Marital status")
+marital_F <- ggplot(myData%>%filter(gender=="Female")%>%filter(!is.na(gender))%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar() + labs(title = "Marital status women", x="Marital status")
+grid.arrange(marital_M, marital_F, ncol=2)
+```
+
+The following plot is to show the difference is number of managers among men and women. You can see that within this company more men are in the position of manager compared to women.
+```{r,echo=TRUE,message=FALSE}
+managers_male <- myData%>%filter(gender=="Male")%>%filter(job_role=="Manager")%>%count()
+managers_female <- myData%>%filter(gender=="Female")%>%filter(job_role=="Manager")%>%count()
+temp_gender <- c("Male", "Female")
+temp_count <- c(managers_male, managers_female)
+manager_data <- data.frame(temp_gender,temp_count)
+ggplot(manager_data, aes(x=temp_gender,y=temp_count)) + geom_bar(stat="identity")+labs(title="Number of managers betwen men and women",x="Gender",y="number of managers")
+```
+
+The next plot is to show the average hourly wage between men and women. It shows that both men and women earn pretty much the same average hourly wage.
+
+```{r,echo=TRUE,message=FALSE}
+temp <- myData%>%filter(gender=="Male")
+male_hourly <- mean(temp$hourly_rate)
+temp <- myData%>%filter(gender=="Female")
+female_hourly <- mean(temp$hourly_rate)
+temp_gender <- c("Male","Female")
+temp_avg_hourly_rates <- c(male_hourly,female_hourly)
+hourly_df <- data.frame(temp_gender,temp_avg_hourly_rates)
+ggplot(hourly_df, aes(x=temp_gender,y=temp_avg_hourly_rates)) + geom_bar(stat="identity")+labs(title="Average hourly wage between men and women",x="Gender",y="Average hourly wage")
+```
+
+The next four plots show us the education level and education field between men and women in the company. It shows both a very similar distribution in education level and education field. Both men and women have a majority of a education level 3 and for educational field both for men and women the majority has a major in life sciences.
+
+```{r,echo=TRUE,message=FALSE}
+edu_lvl_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education)) + geom_bar() + labs(title = "Education level men", x="Education level")
+edu_lvl_F <- ggplot(myData%>%filter(gender=="Female")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education)) + geom_bar() + labs(title = "Education level women", x="Education level")
+edu_field_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field)) + geom_bar() + labs(title = "Education field men", x="Education field")+coord_flip()
+edu_field_F <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field)) + geom_bar() + labs(title = "Education field men", x="Education field")+coord_flip()
+grid.arrange(edu_lvl_M, edu_lvl_F,edu_field_M,edu_field_F, ncol=2)
+```
+
+
+# Branch Analysis
+
+#### As stated by the CEO that the large part of her concern is regarding differences in structure between the two branches. Let's explore some plots to understand the differences.
+
+
+Let's start by looking at the split of the company between these two branches.
+```{r}
+myData %>% group_by(city) %>% summarise(cityCount = n()) %>% 
+  ggplot(aes(x=city,y=cityCount,fill = city)) +
+  geom_bar(stat = "identity") + 
+  geom_label(aes(label = cityCount), show.legend = FALSE) +
+  labs(title = "Count of Employees by branch", x= "City", y="Count") + 
+  theme(legend.position = "none")
+  
+## maybe add percentage split - add Catalan flag and Uk flag
+
+```
+
+We can see the London is the larger branch and seems to maybe be the original branch if we can infer that from pure count of employees. This could make intuitive sense given what the CEO said about desiring Barcelona to match London.
+
+
+Next let's look at the split of gender between the two companies.
+
+```{r}
+totalBCN <- myData %>% filter(city == "Barcelona") %>% pull(city) %>% length()
+totalLDN <- myData %>% filter(city == "London") %>% pull(city) %>% length()
+
+myData %>% group_by(city,gender) %>% count(gender) %>% mutate(pct = prop.table(n)) %>% 
+  ggplot(aes(x=gender,y=n,fill = city)) +
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_label(aes(label = n), show.legend = FALSE,
+             position = position_dodge(width = .85),) +
+  geom_label(aes(label = scales::percent(pct)), show.legend = FALSE,
+             position = position_dodge(width = .85),
+             vjust = 2.5) +
+  theme_minimal() + 
+  labs (y = "Count", x="Gender", title="Gender Count by Branch")
+
+
+```
+
+
+Interestingly comparing raw counts of females and males across branches there are actually more females proportional to the branch total employees in Barcelona than London.
+
+Average wage by gender by city 
+```{r}
+
+# totalBCN <- myData %>% filter(city == "Barcelona") %>% pull(city) %>% length()
+# totalLDN <- myData %>% filter(city == "London") %>% pull(city) %>% length()
+# mBCN
+# wBCN
+# mLDN
+# wLDN
+
+
+```
+
+
+Discrepancies by department same as above
+
+
+```{r}
+#Roger's plots
+ggplot(myData, aes(x=num_companies_worked, y=monthly_income, color= department)) + geom_point() + geom_smooth(method=lm)
+ggplot(myData, aes(x=over18))+geom_bar()
+ggplot(myData, aes(x=num_companies_worked, y=percent_salary_hike)) + geom_point() + geom_smooth(method=lm)
+```
+
+
+Linear model  for mothly income : 
+```{r}
+model1 <- lm (monthly_income ~ job_level + gender, myData)
+summary( model1 )
+
+#Summary table of the model 1 
+
+glance(model1)
+
+```
+
+Plot the barchat of job roles: 
+```{r}
+ggplot(myData, aes(job_role)) + geom_bar()  + coord_flip()
+```
+
 
