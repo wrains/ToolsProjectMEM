@@ -139,7 +139,7 @@ We are going to check if we have loaded all information from the file and clean 
   # mydata
   # mydata$gender <- mydata$gender %>% as.factor()
 #}
-
+  myData <- myData[!(myData$num_companies_worked < 0),]
 #  clean_data(myData)
 
 ```
@@ -404,3 +404,12 @@ Average wage by gender by city
 
 
 Discrepancies by department same as above
+
+
+```{r}
+#Roger's plots
+ggplot(myData, aes(x=num_companies_worked, y=monthly_income, color= department)) + geom_point() + geom_smooth(method=lm)
+ggplot(myData, aes(x=over18))+geom_bar()
+ggplot(myData, aes(x=num_companies_worked, y=percent_salary_hike)) + geom_point() + geom_smooth(method=lm)
+```
+
