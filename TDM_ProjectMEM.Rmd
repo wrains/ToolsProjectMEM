@@ -14,6 +14,7 @@ library(tidyverse)
 library(janitor)
 library(lubridate)
 library(gridExtra)
+library(broom)
 ```
 
 ## Introduction
@@ -412,4 +413,22 @@ ggplot(myData, aes(x=num_companies_worked, y=monthly_income, color= department))
 ggplot(myData, aes(x=over18))+geom_bar()
 ggplot(myData, aes(x=num_companies_worked, y=percent_salary_hike)) + geom_point() + geom_smooth(method=lm)
 ```
+
+
+Linear model  for mothly income : 
+```{r}
+model1 <- lm (monthly_income ~ job_level + gender, myData)
+summary( model1 )
+
+#Summary table of the model 1 
+
+glance(model1)
+
+```
+
+Plot the barchat of job roles: 
+```{r}
+ggplot(myData, aes(job_role)) + geom_bar()  + coord_flip()
+```
+
 
