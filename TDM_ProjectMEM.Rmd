@@ -373,8 +373,14 @@ Next let's look at the split of gender between the two companies.
 totalBCN <- myData %>% filter(city == "Barcelona") %>% pull(city) %>% length()
 totalLDN <- myData %>% filter(city == "London") %>% pull(city) %>% length()
 
-myData %>% group_by(city,gender) %>% count(gender) %>% mutate(pct = prop.table(n)) %>% 
-  ggplot(aes(x=gender,y=n,fill = city)) +
+maleBCN <- myData %>% filter(city == "Barcelona" & gender == "Male") %>% pull(city) %>% length()
+maleLDN <- myData %>% filter(city == "London" & gender == "Male") %>% pull(city) %>% length()
+
+myData %>% tabyl(gender)
+cityTotals <- c(totalBCN,totalBCN,totalLDN,totalLDN)
+
+myData %>% group_by(city,gender) %>% count(gender) %>% cbind(cityTotals=cityTotals) %>% mutate(pct = n/cityTotals) %>% 
+  ggplot(aes(x=city,y=n,fill = gender)) +
   geom_bar(stat = 'identity', position = "dodge") +
   geom_label(aes(label = n), show.legend = FALSE,
              position = position_dodge(width = .85),) +
@@ -382,29 +388,81 @@ myData %>% group_by(city,gender) %>% count(gender) %>% mutate(pct = prop.table(n
              position = position_dodge(width = .85),
              vjust = 2.5) +
   theme_minimal() + 
-  labs (y = "Count", x="Gender", title="Gender Count by Branch")
+  labs (y = "Count", x="City", title="Gender Count by Branch")
 
 
+bcnDiff = scales::percent((maleBCN-(totalBCN-maleBCN))/(totalBCN-maleBCN))
+ldnDiff = scales::percent((maleLDN-(totalLDN-maleLDN))/(totalLDN-maleLDN))
+
+tribble (
+  ~"City", ~"% Difference b/t men/women",
+  "Barcelona", bcnDiff,
+  "London", ldnDiff
+)
 ```
+Here we can see a fairly comparable result between branches, but the takeaway here should be that at both branches there are less men than women. Given that London has a greater number of employees with a similar but less % point difference than Barcelona the disparity we see is greater there than Barcelona when looking at % difference.
 
+This could manifest in women in London feeling a bit more ostracized and the feeling of being in a man's world. as often is felt by women in industry.
 
-Interestingly comparing raw counts of females and males across branches there are actually more females proportional to the branch total employees in Barcelona than London.
+Let's try to confirm or deny this by looking at employee satisfaction by gender and other key metrics:
 
-Average wage by gender by city 
 ```{r}
+library(forcats)
+library(hrbrthemes)
+library(viridis)
 
-# totalBCN <- myData %>% filter(city == "Barcelona") %>% pull(city) %>% length()
-# totalLDN <- myData %>% filter(city == "London") %>% pull(city) %>% length()
-# mBCN
-# wBCN
-# mLDN
-# wLDN
+p1 <- myData %>%
+  ggplot(aes(fill=gender, y=monthly_income, x=city)) + 
+  geom_violin(position="dodge", alpha=0.5, outlier.colour="transparent") +
+  scale_fill_viridis(discrete=T, name="") +
+  theme_ipsum()  +
+  xlab("") +
+  ylab("") +
+  ylim(0,10000) +
+  labs(title = "Monthly Income by Gender & City") +
+  theme(plot.title = element_text(size=11))
 
+p2 <- myData %>%
+  ggplot(aes(fill=gender, y=job_satisfaction, x=city)) + 
+  geom_violin(position="dodge", alpha=0.5, outlier.colour="transparent") +
+  scale_fill_viridis(discrete=T, name="") +
+  theme_ipsum()  +
+  xlab("") +
+  ylab("") +
+  ylim(0,5) +
+  labs(title = "Job Satisfaction by Gender & City") +
+  theme(plot.title = element_text(size=11))
+
+p3 <- myData %>%
+  ggplot(aes(fill=gender, y=environment_satisfaction, x=city)) + 
+  geom_violin(position="dodge", alpha=0.5, outlier.colour="transparent") +
+  scale_fill_viridis(discrete=T, name="") +
+  theme_ipsum()  +
+  xlab("") +
+  ylab("") +
+  ylim(0,5) +
+  labs(title = "Environment Satisfaction by Gender & City") +
+  theme(plot.title = element_text(size=11))
+
+p4 <- myData %>% group_by(gender,city) %>% count(gender) %>%
+  ggplot(aes(fill=gender, y=n, x=city)) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Attrition by Gender & City") +
+  ylab("Count") +
+  theme_ipsum() +
+  theme(axis.title.x = element_blank(),
+        plot.title = element_text(size=11),
+        legend.title=element_blank()) 
+
+grid.arrange(p1,p2,p3,p4,ncol=2)
 
 ```
-
+<br>
+The above variables show very even spread between genders. This bodes quite well for the company along gender lines.  
 
 Discrepancies by department same as above
+
+
 
 
 ```{r}
