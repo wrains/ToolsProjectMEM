@@ -489,7 +489,7 @@ Plot the barchart of job roles:
 ggplot(myData, aes(job_role)) + geom_bar()  + coord_flip()
 ```
 
-# Comparing the gender statistics to statistics of Spain and London
+# Comparing company worklife balance to UK, Spain, and EU statistics 
 
 According to the European institute for Gender Equality
 (Source: https://eige.europa.eu/gender-statistics/dgs/indicator/ta_wrklab_wrk_baltime_perc__ewcs_familybalance) these are the statistics regarding work life balance for men and women in the EU, Spain, and in the UK:
