@@ -531,10 +531,8 @@ Monthly_Income <- myData$monthly_income
 # Construct the data frame
 ABC_analysis1 <- data.frame(Employee_function, Monthly_Income)
 
-ABC_analysis1
 # Sort sales column in descending order
 ABC_analysis1 <- ABC_analysis1[order(-ABC_analysis1$Monthly_Income), ]
-ABC_analysis1
 # Get the total salary
 total_salary <- sum(ABC_analysis1$Monthly_Income)
 
@@ -549,13 +547,14 @@ library(dplyr)
 
 # Add the percentage column to  data frame
 ABC_analysis1 <- (mutate(ABC_analysis1,Percentage))
-ABC_analysis1
+
 # Get the cumulative sum of the products salaries percentages
 cumulative <- cumsum(ABC_analysis1$Percentage)
-cumulative
+
+
 # Add the cumulative column to data frame, for the percentages
 ABC_analysis1<- mutate(ABC_analysis1, cumulative)
-ABC_analysis1
+
 # Create an empty vector for employees classification
 classification <- c()
 
@@ -568,22 +567,25 @@ for (i in ABC_analysis1$cumulative){
   } else {
     classification <- append(classification, "C") }}
 
-# Add the classification column to the data frame
+# Add the classification and gender column to the data frame
+Gender <- myData$gender
 
 ABC_analysis1 <- mutate(ABC_analysis1, classification)
-
-ABC_analysis1 
-
+ABC_analysis1 <- mutate(ABC_analysis1, Gender)
+# Summary table: 
+summary <- count(ABC_analysis1, classification)
+summary$percentage <- summary$n / sum(summary$n) * 100
+summary
 ```
 
 As for the gender analysis with ABC method : 
 
 ```{r}
-Gender <- myData$gender
-ABC_analysis_gender_A <- mutate(ABC_analysis1,Gender)
+
+ABC_analysis_gender_A <- ABC_analysis1
 ABC_analysis_gender_A <- ABC_analysis1 %>% filter(classification == "A")
 
-summary_gender_ABCanalysis_A <- count( ABC_analysis_gender_A, Gender)
+summary_gender_ABCanalysis_A <- count(ABC_analysis_gender_A, Gender)
 summary_gender_ABCanalysis_A <- tibble(summary_gender_ABCanalysis_A)
 summary_gender_ABCanalysis_A <- mutate(summary_gender_ABCanalysis_A, Percen.= summary_gender_ABCanalysis_A$n/sum(summary_gender_ABCanalysis_A$n)*100)
 summary_gender_ABCanalysis_A
@@ -624,7 +626,7 @@ We will now proceed to the ABC analysis of the cities of Barcelona and London.
 The objective of this ABC analysis is to see what is the difference in gender between employees in Barcelona and London. 
 
 ```{r}
-#####################################BARCELONA###############################################
+################################Barcelone################################
 
 Barcelona <- myData %>% filter(city == "Barcelona")
 #Job Role
@@ -637,10 +639,10 @@ Monthly_Income <- Barcelona$monthly_income
 # Construct the data frame
 ABC_analysis1 <- data.frame(Employee_function, Monthly_Income)
 
-ABC_analysis1
+
 # Sort sales column in descending order
 ABC_analysis1 <- ABC_analysis1[order(-ABC_analysis1$Monthly_Income), ]
-ABC_analysis1
+
 # Get the total salary
 total_salary <- sum(ABC_analysis1$Monthly_Income)
 
@@ -655,13 +657,13 @@ library(dplyr)
 
 # Add the percentage column to  data frame
 ABC_analysis1 <- (mutate(ABC_analysis1,Percentage))
-ABC_analysis1
+
 # Get the cumulative sum of the products salaries percentages
 cumulative <- cumsum(ABC_analysis1$Percentage)
-cumulative
+
 # Add the cumulative column to data frame, for the percentages
 ABC_analysis1<- mutate(ABC_analysis1, cumulative)
-ABC_analysis1
+
 # Create an empty vector for employees classification
 classification <- c()
 
@@ -675,21 +677,28 @@ for (i in ABC_analysis1$cumulative){
     classification <- append(classification, "C") }}
 
 # Add the classification column to the data frame
+Gender <- Barcelona$gender
+
+ABC_analysis1 <- mutate(ABC_analysis1, Gender)
+
 ABC_analysis1 <- mutate(ABC_analysis1, classification)
-ABC_analysis1 
+
+#Plot :
 ggplot(data = ABC_analysis1, aes(x = classification)) +
   geom_bar(aes(fill = classification)) + 
   labs(title = "Employee Clasification",
        subtitle = "Following the Pareto's Law/ Criteria",
        x = "Employee Clasification",
        y = "Count")
+#Summary table : 
 summary <- count(ABC_analysis1, classification)
 summary$percentage <- summary$n / sum(summary$n) * 100
 summary
+
+
 ############################Barcelona gender######################################
 
-Gender <- Barcelona$gender
-ABC_analysis_gender_A <- mutate(ABC_analysis1,Gender)
+ABC_analysis_gender_A <- ABC_analysis1
 ABC_analysis_gender_A <- ABC_analysis1 %>% filter(classification == "A")
 
 summary_gender_ABCanalysis_A <- count( ABC_analysis_gender_A, Gender)
@@ -771,10 +780,9 @@ Monthly_Income <- London$monthly_income
 # Construct the data frame
 ABC_analysis1 <- data.frame(Employee_function, Monthly_Income)
 
-ABC_analysis1
 # Sort sales column in descending order
 ABC_analysis1 <- ABC_analysis1[order(-ABC_analysis1$Monthly_Income), ]
-ABC_analysis1
+
 # Get the total salary
 total_salary <- sum(ABC_analysis1$Monthly_Income)
 
@@ -789,13 +797,13 @@ library(dplyr)
 
 # Add the percentage column to  data frame
 ABC_analysis1 <- (mutate(ABC_analysis1,Percentage))
-ABC_analysis1
+
 # Get the cumulative sum of the products salaries percentages
 cumulative <- cumsum(ABC_analysis1$Percentage)
-cumulative
+
 # Add the cumulative column to data frame, for the percentages
 ABC_analysis1<- mutate(ABC_analysis1, cumulative)
-ABC_analysis1
+
 # Create an empty vector for employees classification
 classification <- c()
 
@@ -809,22 +817,30 @@ for (i in ABC_analysis1$cumulative){
     classification <- append(classification, "C") }}
 
 # Add the classification column to the data frame
+
+Gender <- London$gender
+
 ABC_analysis1 <- mutate(ABC_analysis1, classification)
-ABC_analysis1 
+ABC_analysis1 <- mutate(ABC_analysis1, Gender)
+
+
+#The plot
 ggplot(data = ABC_analysis1, aes(x = classification)) +
   geom_bar(aes(fill = classification)) + 
   labs(title = "Employee Clasification",
        subtitle = "Following the Pareto's Law/ Criteria",
        x = "Employee Clasification",
        y = "Count")
+
+#Sumamry table:
 summary <- count(ABC_analysis1, classification)
 summary$percentage <- summary$n / sum(summary$n) * 100
 summary
 
 ############################London gender################################################
 
-Gender <- Barcelona$gender
-ABC_analysis_gender_A <- mutate(ABC_analysis1,Gender)
+ABC_analysis_gender_A <- ABC_analysis1
+
 ABC_analysis_gender_A <- ABC_analysis1 %>% filter(classification == "A")
 
 summary_gender_ABCanalysis_A <- count( ABC_analysis_gender_A, Gender)
