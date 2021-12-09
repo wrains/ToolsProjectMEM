@@ -1,6 +1,6 @@
 ---
 title: "TDM_ProjectMEM"
-author: "Roger Serra, Yassine Khalili, Kerim Kiliç, Michael Rains"
+author: "Roger Serra, Yassine Khalili Farissi, Kerim Kiliç, Michael Rains"
 date: "10/11/2021"
 output: 
     prettydoc::html_pretty:
@@ -20,6 +20,13 @@ library(broom)
 ## Introduction
 
 After meeting with the CEO it is apparent to us that gender equity is extremely important to her and she has some serious concerns regarding the differences between the **Barcelona** and **London** branches of the company. 
+
+## Software Settings
+
+The language used is **R 4.0.2 GUI 1.72 Catalina build (7847)** and the software used for academic reasons is Rstudio, for this this analysis.
+
+And the file with the Business case was downloaded from the platform Atenea, in the Tools for Decision Making - 2021/2022 course for Master's Degree in Technology and Engineering Management offered by the Universidad Politecnica de Cataluña.
+
 
 ### European Gender Equity Research and Analysis
 
@@ -473,7 +480,12 @@ ggplot(myData, aes(x=num_companies_worked, y=percent_salary_hike)) + geom_point(
 ```
 
 
+A linear model has also been developed to predict the salary that a new employee can expect to earn, depending on the level of the position he/she joins the company. 
+
+We include the variable Gender to see if there is a influence on this variable for the monthly income. The result of this sensibility analysis for the linear model is that the variable Gender do not influence the the month income for employees in the company.
+
 Linear model  for mothly income : 
+
 ```{r}
 model1 <- lm (monthly_income ~ job_level + gender, myData)
 summary( model1 )
@@ -489,4 +501,390 @@ Plot the barchat of job roles:
 ggplot(myData, aes(job_role)) + geom_bar()  + coord_flip()
 ```
 
+
+It has been decided to classify employees into A, B and C employees, according to their salary. The salary is included in the operating costs of the company, and is therefore a cost. 
+
+For this reason, the need arises to classify which are the salaries that represent the greatest expense. 
+
+In the analysis a classification of the employees in A, B and C according to what percentage of cost they represent for the company. 
+
+As a criterion it has been taken that the A employees represent 70% of the total sum of all salaries, the B employees represent 20% and the C employees represent only 10%. 
+
+So: 
+
+* A = 70% of the salary cost.
+* B = 20% of the salary cost.
+* C =  10% of the salary cost.
+
+This analysis is very useful to see if **Pareto's law**, which stipulates that 20% of the inputs cause 80% of the outputs, is fulfilled. 
+
+This translated into the business case we are dealing with would be that 20% of the employees represent 80% of the company's salary expenditure.
+
+```{r}
+#Job Role
+
+Employee_function <- myData$job_role
+
+# Monthly Income
+Monthly_Income <- myData$monthly_income
+
+# Construct the data frame
+ABC_analysis1 <- data.frame(Employee_function, Monthly_Income)
+
+ABC_analysis1
+# Sort sales column in descending order
+ABC_analysis1 <- ABC_analysis1[order(-ABC_analysis1$Monthly_Income), ]
+ABC_analysis1
+# Get the total salary
+total_salary <- sum(ABC_analysis1$Monthly_Income)
+
+# Create an empty vector for salaries percentage
+Percentage <- c()
+# Get the salaries percentage for each item
+for (i in ABC_analysis1$Monthly_Income){
+  Percentage <- append(Percentage, i/total_salary * 100)}
+
+# Import dplyr package
+library(dplyr)
+
+# Add the percentage column to  data frame
+ABC_analysis1 <- (mutate(ABC_analysis1,Percentage))
+ABC_analysis1
+# Get the cumulative sum of the products salaries percentages
+cumulative <- cumsum(ABC_analysis1$Percentage)
+cumulative
+# Add the cumulative column to data frame, for the percentages
+ABC_analysis1<- mutate(ABC_analysis1, cumulative)
+ABC_analysis1
+# Create an empty vector for employees classification
+classification <- c()
+
+# Classify the employees by A, B and C
+for (i in ABC_analysis1$cumulative){
+  if (i < 70) {
+    classification <- append(classification, "A")
+  } else if (i >= 70 & i < 90) {
+    classification <- append(classification, "B")
+  } else {
+    classification <- append(classification, "C") }}
+
+# Add the classification column to the data frame
+
+ABC_analysis1 <- mutate(ABC_analysis1, classification)
+
+ABC_analysis1 
+
+```
+
+As for the gender analysis with ABC method : 
+
+```{r}
+Gender <- myData$gender
+ABC_analysis_gender_A <- mutate(ABC_analysis1,Gender)
+ABC_analysis_gender_A <- ABC_analysis1 %>% filter(classification == "A")
+
+summary_gender_ABCanalysis_A <- count( ABC_analysis_gender_A, Gender)
+summary_gender_ABCanalysis_A <- tibble(summary_gender_ABCanalysis_A)
+summary_gender_ABCanalysis_A <- mutate(summary_gender_ABCanalysis_A, Percen.= summary_gender_ABCanalysis_A$n/sum(summary_gender_ABCanalysis_A$n)*100)
+summary_gender_ABCanalysis_A
+
+#Representing that in a graph: 
+
+ggplot(summary_gender_ABCanalysis_A,aes(x='',y=Percen.,fill=Gender))+
+  ggtitle("Gender classification for A employees")+
+  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  coord_polar("y",start = 0)+
+  theme_void()
+#As for the B & C employees : 
+Gender <- myData$gender
+ABC_analysis_gender_BC <- mutate(ABC_analysis1,Gender)
+
+ABC_analysis_gender_BC <- ABC_analysis_gender_BC %>% filter(classification != "A")
+
+summary_gender_ABCanalysis_BC <- count( ABC_analysis_gender_BC , Gender)
+summary_gender_ABCanalysis_BC <- tibble(summary_gender_ABCanalysis_BC)
+summary_gender_ABCanalysis_BC <- mutate(summary_gender_ABCanalysis_BC, Percen.= summary_gender_ABCanalysis_BC$n/sum(summary_gender_ABCanalysis_BC$n)*100)
+summary_gender_ABCanalysis_BC
+
+# Representing that in a graph: 
+
+ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
+  ggtitle("Gender classification for B&C employees")+
+  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  coord_polar("y",start = 0)+
+  theme_void()
+
+```
+
+
+
+
+We will now proceed to the ABC analysis of the cities of Barcelona and London. 
+
+The objective of this ABC analysis is to see what is the difference in gender between employees in Barcelona and London. 
+
+```{r}
+#####################################BARCELONA###############################################
+
+Barcelona <- myData %>% filter(city == "Barcelona")
+#Job Role
+
+Employee_function <- Barcelona$job_role
+
+# Monthly Income
+Monthly_Income <- Barcelona$monthly_income
+
+# Construct the data frame
+ABC_analysis1 <- data.frame(Employee_function, Monthly_Income)
+
+ABC_analysis1
+# Sort sales column in descending order
+ABC_analysis1 <- ABC_analysis1[order(-ABC_analysis1$Monthly_Income), ]
+ABC_analysis1
+# Get the total salary
+total_salary <- sum(ABC_analysis1$Monthly_Income)
+
+# Create an empty vector for salaries percentage
+Percentage <- c()
+# Get the salaries percentage for each item
+for (i in ABC_analysis1$Monthly_Income){
+  Percentage <- append(Percentage, i/total_salary * 100)}
+
+# Import dplyr package
+library(dplyr)
+
+# Add the percentage column to  data frame
+ABC_analysis1 <- (mutate(ABC_analysis1,Percentage))
+ABC_analysis1
+# Get the cumulative sum of the products salaries percentages
+cumulative <- cumsum(ABC_analysis1$Percentage)
+cumulative
+# Add the cumulative column to data frame, for the percentages
+ABC_analysis1<- mutate(ABC_analysis1, cumulative)
+ABC_analysis1
+# Create an empty vector for employees classification
+classification <- c()
+
+# Classify the employees by A, B and C
+for (i in ABC_analysis1$cumulative){
+  if (i < 70) {
+    classification <- append(classification, "A")
+  } else if (i >= 70 & i < 90) {
+    classification <- append(classification, "B")
+  } else {
+    classification <- append(classification, "C") }}
+
+# Add the classification column to the data frame
+ABC_analysis1 <- mutate(ABC_analysis1, classification)
+ABC_analysis1 
+ggplot(data = ABC_analysis1, aes(x = classification)) +
+  geom_bar(aes(fill = classification)) + 
+  labs(title = "Employee Clasification",
+       subtitle = "Following the Pareto's Law/ Criteria",
+       x = "Employee Clasification",
+       y = "Count")
+summary <- count(ABC_analysis1, classification)
+summary$percentage <- summary$n / sum(summary$n) * 100
+summary
+############################Barcelona gender######################################
+
+Gender <- Barcelona$gender
+ABC_analysis_gender_A <- mutate(ABC_analysis1,Gender)
+ABC_analysis_gender_A <- ABC_analysis1 %>% filter(classification == "A")
+
+summary_gender_ABCanalysis_A <- count( ABC_analysis_gender_A, Gender)
+summary_gender_ABCanalysis_A <- tibble(summary_gender_ABCanalysis_A)
+summary_gender_ABCanalysis_A <- mutate(summary_gender_ABCanalysis_A, Percen.= summary_gender_ABCanalysis_A$n/sum(summary_gender_ABCanalysis_A$n)*100)
+summary_gender_ABCanalysis_A
+
+#Representing that in a graph: 
+
+ggplot(summary_gender_ABCanalysis_A,aes(x='',y=Percen.,fill=Gender))+
+  ggtitle("Gender classification for A employees")+
+  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  coord_polar("y",start = 0)+
+  theme_void()
+#As for the B & C employees : 
+Gender <- Barcelona$gender
+ABC_analysis_gender_BC <- mutate(ABC_analysis1,Gender)
+
+ABC_analysis_gender_BC <- ABC_analysis_gender_BC %>% filter(classification != "A")
+
+summary_gender_ABCanalysis_BC <- count( ABC_analysis_gender_BC , Gender)
+summary_gender_ABCanalysis_BC <- tibble(summary_gender_ABCanalysis_BC)
+summary_gender_ABCanalysis_BC <- mutate(summary_gender_ABCanalysis_BC, Percen.= summary_gender_ABCanalysis_BC$n/sum(summary_gender_ABCanalysis_BC$n)*100)
+summary_gender_ABCanalysis_BC
+
+# Representing that in a graph: 
+
+ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
+  ggtitle("Gender classification for B&C employees")+
+  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  coord_polar("y",start = 0)+
+  theme_void()
+
+
+#Representing that in a graph: 
+
+ggplot(summary_gender_ABCanalysis_A,aes(x='',y=Percen.,fill=Gender))+
+  ggtitle("Gender classification for A employees")+
+  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  coord_polar("y",start = 0)+
+  theme_void()
+#As for the B & C employees : 
+Gender <- myData$gender
+ABC_analysis_gender_BC <- mutate(ABC_analysis1,Gender)
+
+ABC_analysis_gender_BC <- ABC_analysis_gender_BC %>% filter(classification != "A")
+
+summary_gender_ABCanalysis_BC <- count( ABC_analysis_gender_BC , Gender)
+summary_gender_ABCanalysis_BC <- tibble(summary_gender_ABCanalysis_BC)
+summary_gender_ABCanalysis_BC <- mutate(summary_gender_ABCanalysis_BC, Percen.= summary_gender_ABCanalysis_BC$n/sum(summary_gender_ABCanalysis_BC$n)*100)
+summary_gender_ABCanalysis_BC
+
+# Representing that in a graph: 
+
+ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
+  ggtitle("Gender classification for B&C employees")+
+  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  coord_polar("y",start = 0)+
+  theme_void()
+
+
+```
+
+
+Now we will do the analysis for London city: 
+
+```{r}
+##############################################LONDON#################################################################
+
+London <- myData %>% filter( city == "London")
+
+#Job Role
+
+Employee_function <- London$job_role
+
+# Monthly Income
+Monthly_Income <- London$monthly_income
+
+# Construct the data frame
+ABC_analysis1 <- data.frame(Employee_function, Monthly_Income)
+
+ABC_analysis1
+# Sort sales column in descending order
+ABC_analysis1 <- ABC_analysis1[order(-ABC_analysis1$Monthly_Income), ]
+ABC_analysis1
+# Get the total salary
+total_salary <- sum(ABC_analysis1$Monthly_Income)
+
+# Create an empty vector for salaries percentage
+Percentage <- c()
+# Get the salaries percentage for each item
+for (i in ABC_analysis1$Monthly_Income){
+  Percentage <- append(Percentage, i/total_salary * 100)}
+
+# Import dplyr package
+library(dplyr)
+
+# Add the percentage column to  data frame
+ABC_analysis1 <- (mutate(ABC_analysis1,Percentage))
+ABC_analysis1
+# Get the cumulative sum of the products salaries percentages
+cumulative <- cumsum(ABC_analysis1$Percentage)
+cumulative
+# Add the cumulative column to data frame, for the percentages
+ABC_analysis1<- mutate(ABC_analysis1, cumulative)
+ABC_analysis1
+# Create an empty vector for employees classification
+classification <- c()
+
+# Classify the employees by A, B and C
+for (i in ABC_analysis1$cumulative){
+  if (i < 70) {
+    classification <- append(classification, "A")
+  } else if (i >= 70 & i < 90) {
+    classification <- append(classification, "B")
+  } else {
+    classification <- append(classification, "C") }}
+
+# Add the classification column to the data frame
+ABC_analysis1 <- mutate(ABC_analysis1, classification)
+ABC_analysis1 
+ggplot(data = ABC_analysis1, aes(x = classification)) +
+  geom_bar(aes(fill = classification)) + 
+  labs(title = "Employee Clasification",
+       subtitle = "Following the Pareto's Law/ Criteria",
+       x = "Employee Clasification",
+       y = "Count")
+summary <- count(ABC_analysis1, classification)
+summary$percentage <- summary$n / sum(summary$n) * 100
+summary
+
+############################London gender################################################
+
+Gender <- Barcelona$gender
+ABC_analysis_gender_A <- mutate(ABC_analysis1,Gender)
+ABC_analysis_gender_A <- ABC_analysis1 %>% filter(classification == "A")
+
+summary_gender_ABCanalysis_A <- count( ABC_analysis_gender_A, Gender)
+summary_gender_ABCanalysis_A <- tibble(summary_gender_ABCanalysis_A)
+summary_gender_ABCanalysis_A <- mutate(summary_gender_ABCanalysis_A, Percen.= summary_gender_ABCanalysis_A$n/sum(summary_gender_ABCanalysis_A$n)*100)
+summary_gender_ABCanalysis_A
+
+#Representing that in a graph: 
+
+ggplot(summary_gender_ABCanalysis_A,aes(x='',y=Percen.,fill=Gender))+
+  ggtitle("Gender classification for A employees")+
+  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  coord_polar("y",start = 0)+
+  theme_void()
+#As for the B & C employees : 
+Gender <- Barcelona$gender
+ABC_analysis_gender_BC <- mutate(ABC_analysis1,Gender)
+
+ABC_analysis_gender_BC <- ABC_analysis_gender_BC %>% filter(classification != "A")
+
+summary_gender_ABCanalysis_BC <- count( ABC_analysis_gender_BC , Gender)
+summary_gender_ABCanalysis_BC <- tibble(summary_gender_ABCanalysis_BC)
+summary_gender_ABCanalysis_BC <- mutate(summary_gender_ABCanalysis_BC, Percen.= summary_gender_ABCanalysis_BC$n/sum(summary_gender_ABCanalysis_BC$n)*100)
+summary_gender_ABCanalysis_BC
+
+# Representing that in a graph: 
+
+ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
+  ggtitle("Gender classification for B&C employees")+
+  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  coord_polar("y",start = 0)+
+  theme_void()
+
+
+#Representing that in a graph: 
+
+ggplot(summary_gender_ABCanalysis_A,aes(x='',y=Percen.,fill=Gender))+
+  ggtitle("Gender classification for A employees")+
+  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  coord_polar("y",start = 0)+
+  theme_void()
+#As for the B & C employees : 
+Gender <- myData$gender
+ABC_analysis_gender_BC <- mutate(ABC_analysis1,Gender)
+
+ABC_analysis_gender_BC <- ABC_analysis_gender_BC %>% filter(classification != "A")
+
+summary_gender_ABCanalysis_BC <- count( ABC_analysis_gender_BC , Gender)
+summary_gender_ABCanalysis_BC <- tibble(summary_gender_ABCanalysis_BC)
+summary_gender_ABCanalysis_BC <- mutate(summary_gender_ABCanalysis_BC, Percen.= summary_gender_ABCanalysis_BC$n/sum(summary_gender_ABCanalysis_BC$n)*100)
+summary_gender_ABCanalysis_BC
+
+# Representing that in a graph: 
+
+ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
+  ggtitle("Gender classification for B&C employees")+
+  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  coord_polar("y",start = 0)+
+  theme_void()
+
+
+```
 
