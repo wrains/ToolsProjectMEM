@@ -1,7 +1,9 @@
 ---
-title: "TDM_ProjectMEM"
+title: |
+  IT Company Branch, Gender, and Succession Analysis
+  ![](logo.png){width=400px}
 author: "Roger Serra, Yassine Khalili Farissi, Kerim Kiliç, Michael Rains"
-date: "10/11/2021"
+date: '`r Sys.Date()`'
 output: 
     prettydoc::html_pretty:
     theme: hpstr
@@ -16,29 +18,52 @@ library(lubridate)
 library(gridExtra)
 library(broom)
 ```
+<style>
+.title.toc-ignore.project-name > p {
+  display: flex;
+  justify-content:space-around;
+  align-items: center;
+}
+</style>
+
 
 ## Introduction
 
-After meeting with the CEO it is apparent to us that gender equity is extremely important to her and she has some serious concerns regarding the differences between the **Barcelona** and **London** branches of the company. 
+Our firm has been approached by the CEO of this IT company looking for a data analysis on the current state of her company. We have been sought out for our strong reputation in the industry for our skill in such analyses. The goal of this report is to provide actionable insights and recommendations based on the provided data.
+
+### Concern 1
+- After meeting with the CEO it is apparent to us that gender equity is extremely important to her and she has some serious concerns regarding the differences between the **Barcelona** and **London** branches of the company. 
+### Concern 2
+- She can also sense that there are differing attitudes between departments - and would like recommendations on how to improve them.
+### Concern 3
+- There are major concerns also about the succession strategies for various leadership roles throughout. 
+
+Given these concerns we will take a look at important variables between branches and gender to analyze the situation.
 
 ## Software Settings
 
 The language used is **R 4.0.2 GUI 1.72 Catalina build (7847)** and the software used for academic reasons is Rstudio, for this this analysis.
 
-And the file with the Business case was downloaded from the platform Atenea, in the Tools for Decision Making - 2021/2022 course for Master's Degree in Technology and Engineering Management offered by the Universidad Politecnica de Cataluña.
+The data was provided to us by the business intelligence manager in the London branch. Below you we see us read this in and base most of analysis from this dataset. 
 
+### R Packages
+
+The following R packages will be used in the analysis
+
+tidyverse, janitor, lubridate, gridExtra, and Broom
+
+These packages are respectively useful for manipulating/graphing data, data cleaning, handling and adjusting dates, viewing different plots side by side, and turning objects into tidy tibbles.
 
 ### European Gender Equity Research and Analysis
 
 We will first analyze this issue based on some data we have on the status of gender equity in the workforce in Europe to understand the broader economic and societal context for which the business is operating within.
 
 
-###############################################################################################################
+###############################################
 <externally resourced regarding gender pay gap and strides that still need to be made in Europe in this regard>
 
 <include some plots and other text and conclusions>
-###############################################################################################################
-
+###############################################
 
 
 
@@ -54,10 +79,7 @@ myDataOrig <- myData
 
 ### Let's examine the dataset
 
-
-
 ```{r}
-skimr::skim(myData)
 
 glimpse(myData) 
 
@@ -66,8 +88,39 @@ tail(myData)
 
 ```
 
+We can see that the variable names are not named in an ideal way, thus we will use functions and data cleaning methods to make sure our data is clean and we clean up the names.
+
+
 ### In the dataset we have the following variables 
 
+We did not receive any information on the variables - many of them are self explanatory, but our assumptions are stated below: 
+
+* age - age of the employee
+* attrition - has the employee left for any reason   
+* business_travel - the level to which the person endures business travel
+* daily_rate - the average daily rate the employee makes (this is an odd way to measure salary and thus we might not use this one)         
+* department - the part of the company in which the employee works
+* distance_from_home - distance from home to work - we can assume km for this measure
+* education - education level (we will assume the following: 1 - high school, 2 - some college, 3 - college degree, 4 - master degree, 5 - PHD)
+* education_field - field in which employee is predominantly educated in
+* employee_number - employee identifying number in the dataset
+* environment_satisfaction - satisfaction with the working environment that has been created
+* gender - gender of the employee
+* hourly_rate - the rate an empoyee earns per hour we will assume euros for both but realize that the London numbers could be in **GBP**
+* job_involvement - the degree to which a person psychologically identifies with his or her job
+* job_level - categories of authority in an organization
+* job_role - title or job responsibility of the employee
+* job_satisfaction - measure of workers' contentedness with their job
+* marital_status - details of a persons relationship / married status with a potential partner 
+* monthly_income - everything you earn in one month, before taxes or deductions
+* monthly_rate - fixed amount per pay period that is earned
+* num_companies_worked - number of companies that the employee has worked for
+* over18 - designation of being over 18 or not
+* over_time - is the worker eligible to overtime pay
+* percent_salary_hike - percentage of salary increase the employee had been given
+* performance_rating - rating indicating the performance of the employee
+* relationship_satisfaction - interpersonal evaluation of the positivity of feelings for one's partner and attraction to the relationship
+* standard_hours - standard working hours in a week
 * stock_option_level - values from 0 to 3 indicating the level that the employee is receiving in stock options, 3 being the most stock options
 * total working years - the number of years that the employee has been working in their life
 * training times last year - number of times trained in the last year on any given topic
