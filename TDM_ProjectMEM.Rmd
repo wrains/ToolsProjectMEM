@@ -24,6 +24,11 @@ library(broom)
   justify-content:space-around;
   align-items: center;
 }
+
+title.toc-ignore.project-name > p > #text {
+  max-width: 400px;
+}
+
 </style>
 
 
@@ -32,19 +37,32 @@ library(broom)
 Our firm has been approached by the CEO of this IT company looking for a data analysis on the current state of her company. We have been sought out for our strong reputation in the industry for our skill in such analyses. The goal of this report is to provide actionable insights and recommendations based on the provided data.
 
 ### Concern 1
+
 - After meeting with the CEO it is apparent to us that gender equity is extremely important to her and she has some serious concerns regarding the differences between the **Barcelona** and **London** branches of the company. 
+
 ### Concern 2
+
 - She can also sense that there are differing attitudes between departments - and would like recommendations on how to improve them.
+
 ### Concern 3
+
 - There are major concerns also about the succession strategies for various leadership roles throughout. 
 
 Given these concerns we will take a look at important variables between branches and gender to analyze the situation.
+
+### European Gender Equity Research and Analysis
+
+Additionally throughout our analysis you will find reference to external data sources will first analyze this issue based on some data we have on the status of gender equity in the workforce in Europe to understand the broader economic and societal context for which the business is operating within.
+
+
 
 ## Software Settings
 
 The language used is **R 4.0.2 GUI 1.72 Catalina build (7847)** and the software used for academic reasons is Rstudio, for this this analysis.
 
 The data was provided to us by the business intelligence manager in the London branch. Below you we see us read this in and base most of analysis from this dataset. 
+
+We will provide to your team a zip file with all contained files, datasets, etc. including this RMD file. We recommend opening up the folder as project within RStudio as that is how we have operated in preparing this analysis. 
 
 ### R Packages
 
@@ -53,20 +71,6 @@ The following R packages will be used in the analysis
 tidyverse, janitor, lubridate, gridExtra, and Broom
 
 These packages are respectively useful for manipulating/graphing data, data cleaning, handling and adjusting dates, viewing different plots side by side, and turning objects into tidy tibbles.
-
-### European Gender Equity Research and Analysis
-
-We will first analyze this issue based on some data we have on the status of gender equity in the workforce in Europe to understand the broader economic and societal context for which the business is operating within.
-
-
-###############################################
-<externally resourced regarding gender pay gap and strides that still need to be made in Europe in this regard>
-
-<include some plots and other text and conclusions>
-###############################################
-
-
-
 
 The first step is to load the dataset in the system, and check the names of the variables.
 
@@ -83,6 +87,8 @@ myDataOrig <- myData
 
 glimpse(myData) 
 
+head(myData)
+
 tail(myData)
 
 
@@ -90,6 +96,7 @@ tail(myData)
 
 We can see that the variable names are not named in an ideal way, thus we will use functions and data cleaning methods to make sure our data is clean and we clean up the names.
 
+We can also see that the cases as we can see them from the **head** and the **tail** functions look to be correct as well.
 
 ### In the dataset we have the following variables 
 
@@ -147,64 +154,64 @@ We are going to check if we have loaded all information from the file and clean 
 
 
 
-#clean_data <- function (myData) {
-  
+clean_data <- function (a) {
+
   ### names of the variables
-  myData <- myData %>% clean_names()
-  
+  a <- a %>% clean_names()
+
   ### remove empty rows and columns
-  myData <- myData %>% remove_empty(which = c("rows","cols"))
-  
+  a <- a %>% remove_empty(which = c("rows","cols"))
+
   ### remove constant columns
-  myData <- myData %>% remove_constant()
-  
+  a <- a %>% remove_constant()
+
   ### Check duplicates
-  #myData %>% get_dupes(id)
-  myData <- myData %>% distinct()
-  #myData %>% get_dupes(id)
-  #myData <- myData %>% filter (number_days!=63545)
-  #myData %>% get_dupes(id)
-  
+  #a %>% get_dupes(id)
+  a <- a %>% distinct()
+  #a %>% get_dupes(id)
+  #a <- a %>% filter (number_days!=63545)
+  #a %>% get_dupes(id)
+
   ### Check n's
-  #myData %>% tabyl(gender)
-  #myData %>% select (gender) %>% unique () 
-  #myData %>% select (gender) %>% unique () %>% count()
-  
+  #a %>% tabyl(gender)
+  #a %>% select (gender) %>% unique ()
+  #a %>% select (gender) %>% unique () %>% count()
+
   ### optional code for changing names of variables in records
-  #ifelse (myData$gender == "Female", "female", myData$gender)
   
+  #ifelse (a$gender == "Female", "female", a$gender)
+
   ### rounding
   ### Check the rounds of numbers
 
-  # myData$anual_salary
-  # myData$anual_salary %>% round() # “banker’s rounding”: halves are rounded to the nearest even number.
-  # myData$anual_salary %>% round_half_up()
-  
-  ### Check the NA
+  # a$anual_salary
+  # a$anual_salary %>% round() # “banker’s rounding”: halves are rounded to the nearest even number.
+  # a$anual_salary %>% round_half_up()
 
-  # myData$Gender <- ifelse (myData$id == "6", "female", myData$Gender)
-  # myData$Gender <- ifelse (is.na(myData$Gender), "female", myData$Gender)
-  
-  myData %>% complete.cases() %>% tabyl
-  
-  # mydata <- mydata %>% filter(!is.na(anual_salary))
-  # mydata <- mydata %>% filter (anual_salary != "NA")
-  myData <- myData %>% drop_na()
-  # mydata <- mydata %>% drop_na(anual_salary)
-  
-  
-  ### Check the types
-  
-  myData %>% str()
-  # mydata$id <- mydata$id %>% as.integer()
-  # mydata
-  # mydata$gender <- mydata$gender %>% as.factor()
-#}
-  myData <- myData[!(myData$num_companies_worked < 0),]
-#  clean_data(myData)
+  ### Check the NA
+  a %>% complete.cases() %>% tabyl
+  a <- a %>% drop_na()
+  # a %>% str()
+
+  return(a)
+}
+
+ myData=clean_data(myData)
+ myData <- myData[!(myData$num_companies_worked < 0),]
 
 ```
 
+With the above cleaning steps we achieved the following in no particular order:
+
+- Employee count was dropped due to it being a constant value of no value to our analysis
+- clean_names() changed our variable names into all lower case and consistent format with "_" where there may have been previously spaces which is much nicer for programming purposes
+- Dropped 22 rows with the distinct() function as some rows were repeated records
+- We've identified 24 rows where there are incomplete entries meaning that at least one variable has **NA** for the value. We will choose to leave these records in to preserve accurate counts but depending on what we are analysing we will have to remove certain records from the analysis. This is not a large number of the overall dataset so we can treat them as outliers and handle them as exceptions
+
+<br>
+
+
+Now let's take a look at our datasets after the cleaning has occurred using the a function and a loop through an array that we constuct and finally print tabyl() to understand the distribution of the variables. We've removed some variables as some of the integer variables print and extremely long output from this code.
 
 ```{r}
 # get distro function
@@ -223,9 +230,11 @@ for (vars in dataVars) {
 }
 
 ```
+
 <br>
 From this output we see that we need to clean up **city** variable - we will convert Londres and Barcelone into London and Barcelona respectively.
 <br>
+
 ```{r,include=FALSE}
 myData$city <- ifelse (myData$city == "Barcelone", "Barcelona", myData$city)
 
@@ -262,12 +271,15 @@ myData$gender <- as.character(myData$gender)
 myData$gender <- ifelse(myData$gender == "female", "Female", myData$gender)
 myData$gender <- ifelse(myData$gender == "female ", "Female", myData$gender)
 myData$gender <- ifelse(myData$gender == "male", "Male", myData$gender)
+
 ```
 
 After running the code above the gender is cleaned up and is now only either Male or Female as shown below;
 
 ```{r}
-ggplot(myData, aes(x=gender)) + geom_bar() 
+
+myData %>% ggplot(aes(x=gender)) + geom_bar()
+
 ```
 
 ### Cleaning the job involvement data
@@ -328,6 +340,14 @@ ggplot(myData%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar()
 ```
 
 We can see that the variable marital status has been cleaned to Divorced, Married, and Single
+
+We have also seen that there are a few cases where there are two entries in dept for Human Resources that are keyed as HR instead. We will change to the full name which better matches the rest of the dataset.
+
+```{r}
+myData$department= ifelse(myData$department == "HR", "Human Resources", as.character(myData$department))
+```
+
+Now this issue has been resolved.
 
 ### Other Considerations
 
@@ -411,9 +431,14 @@ grid.arrange(edu_lvl_M, edu_lvl_F,edu_field_M,edu_field_F, ncol=2)
 #### As stated by the CEO that the large part of her concern is regarding differences in structure between the two branches. Let's explore some plots to understand the differences.
 
 
-Let's start by looking at the split of the company between these two branches.
+Let's start by looking at the split of the company between these two branches. We will remove attrited employees and only consider "active" employees for this comparison.
+
+For this we will create a new dataset for only attrition **"No"** as we will use it many times.
 ```{r}
-myData %>% group_by(city) %>% summarise(cityCount = n()) %>% 
+activeEmployees = myData %>% filter(attrition=="No")
+
+
+activeEmployees %>% group_by(city) %>% summarise(cityCount = n()) %>% 
   ggplot(aes(x=city,y=cityCount,fill = city)) +
   geom_bar(stat = "identity") + 
   geom_label(aes(label = cityCount), show.legend = FALSE) +
@@ -424,22 +449,22 @@ myData %>% group_by(city) %>% summarise(cityCount = n()) %>%
 
 ```
 
-We can see the London is the larger branch and seems to maybe be the original branch if we can infer that from pure count of employees. This could make intuitive sense given what the CEO said about desiring Barcelona to match London.
+We can see that London is the larger branch and seems to maybe be the original branch if we can infer that from pure count of employees. This could make intuitive sense given what the CEO said about desiring Barcelona to match London.
 
 
 Next let's look at the split of gender between the two companies.
 
 ```{r}
-totalBCN <- myData %>% filter(city == "Barcelona") %>% pull(city) %>% length()
-totalLDN <- myData %>% filter(city == "London") %>% pull(city) %>% length()
+totalBCN <- activeEmployees %>% filter(city == "Barcelona") %>% pull(city) %>% length()
+totalLDN <- activeEmployees %>% filter(city == "London") %>% pull(city) %>% length()
 
-maleBCN <- myData %>% filter(city == "Barcelona" & gender == "Male") %>% pull(city) %>% length()
-maleLDN <- myData %>% filter(city == "London" & gender == "Male") %>% pull(city) %>% length()
+maleBCN <- activeEmployees %>% filter(city == "Barcelona" & gender == "Male") %>% pull(city) %>% length()
+maleLDN <- activeEmployees %>% filter(city == "London" & gender == "Male") %>% pull(city) %>% length()
 
-myData %>% tabyl(gender)
+activeEmployees %>% tabyl(gender)
 cityTotals <- c(totalBCN,totalBCN,totalLDN,totalLDN)
 
-myData %>% group_by(city,gender) %>% count(gender) %>% cbind(cityTotals=cityTotals) %>% mutate(pct = n/cityTotals) %>% 
+activeEmployees %>% group_by(city,gender) %>% count(gender) %>% cbind(cityTotals=cityTotals) %>% mutate(pct = n/cityTotals) %>% 
   ggplot(aes(x=city,y=n,fill = gender)) +
   geom_bar(stat = 'identity', position = "dodge") +
   geom_label(aes(label = n), show.legend = FALSE,
@@ -471,7 +496,7 @@ library(forcats)
 library(hrbrthemes)
 library(viridis)
 
-p1 <- myData %>%
+p1 <- activeEmployees %>%
   ggplot(aes(fill=gender, y=monthly_income, x=city)) + 
   geom_violin(position="dodge", alpha=0.5, outlier.colour="transparent") +
   scale_fill_viridis(discrete=T, name="") +
@@ -482,7 +507,7 @@ p1 <- myData %>%
   labs(title = "Monthly Income by Gender & City") +
   theme(plot.title = element_text(size=11))
 
-p2 <- myData %>%
+p2 <- activeEmployees %>%
   ggplot(aes(fill=gender, y=job_satisfaction, x=city)) + 
   geom_violin(position="dodge", alpha=0.5, outlier.colour="transparent") +
   scale_fill_viridis(discrete=T, name="") +
@@ -493,7 +518,7 @@ p2 <- myData %>%
   labs(title = "Job Satisfaction by Gender & City") +
   theme(plot.title = element_text(size=11))
 
-p3 <- myData %>%
+p3 <- activeEmployees %>%
   ggplot(aes(fill=gender, y=environment_satisfaction, x=city)) + 
   geom_violin(position="dodge", alpha=0.5, outlier.colour="transparent") +
   scale_fill_viridis(discrete=T, name="") +
@@ -504,9 +529,9 @@ p3 <- myData %>%
   labs(title = "Environment Satisfaction by Gender & City") +
   theme(plot.title = element_text(size=11))
 
-p4 <- myData %>% group_by(gender,city) %>% count(gender) %>%
-  ggplot(aes(fill=gender, y=n, x=city)) + 
-  geom_bar(stat = "identity") +
+p4 <- myData %>% group_by(gender,city,attrition) %>% count(gender,attrition) %>%
+  ggplot(aes(fill=attrition, y=n, group=city,x=gender)) + 
+  geom_bar(stat = "identity",position = "dodge") +
   labs(title = "Attrition by Gender & City") +
   ylab("Count") +
   theme_ipsum() +
@@ -537,7 +562,7 @@ A linear model has also been developed to predict the salary that a new employee
 
 We include the variable Gender to see if there is a influence on this variable for the monthly income. The result of this sensibility analysis for the linear model is that the variable Gender do not influence the the month income for employees in the company.
 
-Linear model  for mothly income : 
+Linear model  for monthly income : 
 
 ```{r}
 model1 <- lm (monthly_income ~ job_level + gender, myData)
@@ -549,7 +574,9 @@ glance(model1)
 
 ```
 
-Plot the barchat of job roles: 
+We can see from this model that gender is not a significant (in terms of probability) predictor in this case according to the p value. This gives some positive reinforcement to the concern of the CEO along the lines of gender equity but only in the most extreme case would this variable show to be significant in our opinion, thus even though it is shown to not be significant, we could generally say that even with a slight positive coefficient for male in this case, it is a trend that we need to keep an eye on. 
+
+Plot the bar chart of job roles: 
 ```{r}
 ggplot(myData, aes(job_role)) + geom_bar()  + coord_flip()
 ```
@@ -1024,4 +1051,32 @@ colnames(women_company_work_life_balance) <- c("Work life balance","Company","EU
 women_company_work_life_balance
 ```
 
+
+### Concern 3 Analysis
+
+Now we will consider the concern regarding succession strategies. 
+
+We need to start this by creating a dataset and finding specifically the people that are in leadership roles and then examine (in most cases) the next highest role in that department to get a sense of if someone is right to be promoted. Generally we want to see years experience, high performance and job satisfaction so that we know someone has the ability, experience and desire to hold the next position. If we do not see these candidates for certain roles then we will suggest looking at potentially an external hire for that position. 
+
+```{r}
+activeEmployees%>%tabyl(department,job_role)
+
+depts=activeEmployees%>%filter(department!="")%>%pull(department)%>%unique()
+for (dept in depts) {
+  print(dept)
+  print(activeEmployees %>% filter(department==dept)%>%tabyl(job_role))
+  
+}
+
+
+```
+
+
+
+
+# References 
+
+[1] Indicator: In general, how do your working hours fit in with your family or social commitments outside work? (% of respondents, 15+ workers) | Gender Statistics Database. (n.d.). European Institute for Gender Equality. Retrieved December 18, 2021, from https://eige.europa.eu/gender-statistics/dgs/indicator/ta_wrklab_wrk_baltime_perc__ewcs_familybalance
+
+[2] R Core Team (2016). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
 
