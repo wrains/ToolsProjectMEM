@@ -345,6 +345,12 @@ We have also seen that there are a few cases where there are two entries in dept
 
 ```{r}
 myData$department= ifelse(myData$department == "HR", "Human Resources", as.character(myData$department))
+
+myData$department= ifelse(myData$department == "Research and development", "Research & development", as.character(myData$department))
+
+myData$department= ifelse(myData$department == "Reseach and Development", "Research & development", as.character(myData$department))
+
+
 ```
 
 Now this issue has been resolved.
@@ -1059,14 +1065,13 @@ Before starting with an analysis of the succession strategy, we will begin with 
 The objective of this analysis is to introduce in which departments there are more departures. 
 
 ```{r}
-#################################### BARCELONA ###############################################################
-
-people_left_bcn <- myData%>%filter(myData$attrition=="Yes"&& myData$city == "Barcelona" )
+####################################### BARCELONA ################################################
+people_left_bcn <- myData%>%filter(myData$attrition =="Yes" && myData$city == "Barcelona" )
 
 people_left_bcn <- myData %>% select( attrition, department, city, job_role)
 
 
-people_left_bcn <- as.data.frame( people_left %>% filter( attrition=="Yes" & city == "Barcelona") ) 
+people_left_bcn <- as.data.frame( people_left_bcn %>% filter( attrition=="Yes" & city == "Barcelona") ) 
 
 ggplot(people_left_bcn, aes(x=department)) + geom_bar(stat="count", fill=alpha("navyblue", 0.7))  +
   theme_minimal() + coord_polar(start = 0) 
@@ -1081,14 +1086,13 @@ After Research and development, the second department most affected by departure
 We will now do the same analysis of departures in the departments for *London* :
 
 ```{r}
-
-######################################## LONDON #############################################################
+####################################### LONDON ####################################################
 
 people_left_ldn <- myData%>%filter(myData$attrition=="Yes"&& myData$city == "London" )
 
 people_left_ldn <- myData %>% select( attrition, department, city, job_role)
 
-people_left_ldn <- as.data.frame( people_left %>% filter( attrition=="Yes" & city == "London") ) 
+people_left_ldn <- as.data.frame( people_left_ldn %>% filter( attrition=="Yes" & city == "London") ) 
 
 ggplot(people_left_ldn, aes(x=department)) + geom_bar(stat="count", fill=alpha("navyblue", 0.7))  +
   theme_minimal() + coord_polar(start = 0)
