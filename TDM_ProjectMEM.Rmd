@@ -1054,7 +1054,53 @@ women_company_work_life_balance
 
 ### Concern 3 Analysis
 
-Now we will consider the concern regarding succession strategies. 
+Before starting with an analysis of the succession strategy, we will begin with an introduction of the people who have left the company. We will filter by city, starting with Barcelona, then London. 
+
+The objective of this analysis is to introduce in which departments there are more departures. 
+
+```{r}
+#################################### BARCELONA ###############################################################
+
+people_left_bcn <- myData%>%filter(myData$attrition=="Yes"&& myData$city == "Barcelona" )
+
+people_left_bcn <- myData %>% select( attrition, department, city, job_role)
+
+
+people_left_bcn <- as.data.frame( people_left %>% filter( attrition=="Yes" & city == "Barcelona") ) 
+
+ggplot(people_left_bcn, aes(x=department)) + geom_bar(stat="count", fill=alpha("navyblue", 0.7))  +
+  theme_minimal() + coord_polar(start = 0) 
+
+```
+
+As can be seen, the highest number of departures is in Research and development, regardless of the number of people working in this department, the rate of departures is still higher than in the rest of the departments. 
+
+After Research and development, the second department most affected by departures is Sales. 
+
+
+We will now do the same analysis of departures in the departments for *London* :
+
+```{r}
+
+######################################## LONDON #############################################################
+
+people_left_ldn <- myData%>%filter(myData$attrition=="Yes"&& myData$city == "London" )
+
+people_left_ldn <- myData %>% select( attrition, department, city, job_role)
+
+people_left_ldn <- as.data.frame( people_left %>% filter( attrition=="Yes" & city == "London") ) 
+
+ggplot(people_left_ldn, aes(x=department)) + geom_bar(stat="count", fill=alpha("navyblue", 0.7))  +
+  theme_minimal() + coord_polar(start = 0)
+
+
+```
+
+
+As we can see, once again, Research and development is the department that is most affected in terms of personnel departures.
+
+
+Now we will consider the concern regarding *succession strategies*. 
 
 We need to start this by creating a dataset and finding specifically the people that are in leadership roles and then examine (in most cases) the next highest role in that department to get a sense of if someone is right to be promoted. Generally we want to see years experience, high performance and job satisfaction so that we know someone has the ability, experience and desire to hold the next position. If we do not see these candidates for certain roles then we will suggest looking at potentially an external hire for that position. 
 
