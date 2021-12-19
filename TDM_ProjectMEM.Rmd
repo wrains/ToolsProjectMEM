@@ -1169,59 +1169,139 @@ The plots of the averages of the variables in the linear regression model are ve
 
 # Plots of gender across different variables
 
-The next plot is to show the distribution of job involvement between men and women. It shows that the distribution of job involvement is similar between men and women.
+The next plots is to show the distribution of job involvement between men and women. It shows that the distribution of job involvement is similar between men and women.
+
+We will start with Barcelona and then London.
+
+So, for Barcelona the job involvement between men and women is shown in the following graph:  
 
 ```{r,echo=TRUE,message=FALSE}
-job_inv_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_involvement,fill="#00BFC4")) + geom_bar() + labs(title = "Job Involvement Men",x="") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
-job_inv_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_involvement,fill="#F8766D")) + geom_bar() + labs(title = "Job Involvement Women",x= "") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
-grid.arrange(job_inv_M, job_inv_F, ncol=2)
+job_inv_M_BCN <- ggplot(myData%>%filter(gender=="Male"& city=="Barcelona"), aes(x=job_involvement,fill="#00BFC4")) + geom_bar() + labs(title = "Job Involvement Men BCN",x="Ratio") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
+job_inv_F_BCN <- ggplot(myData%>%filter(gender=="Female"& city=="Barcelona"), aes(x=job_involvement,fill="#F8766D")) + geom_bar() + labs(title = "Job Involvement Women BCN",x= "Ratio") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
+grid.arrange(job_inv_M_BCN, job_inv_F_BCN, ncol= 2)
 ```
 
-The next plot is to show the differences between the job level of men and women. It shows that the distribution looks similar, however, in men most of the men have a job level of 1 and the second highest count of job level is level 2. While most women have a job level of 1, and second most have a job level of level 2.
+We can observe that, for both men and women, the majority of job involvement is located in the ratio of 3 out of 4, for the city of Barcelona.
+
+Now we will plot the graph of job involvement for the city of London: 
+
+```{r}
+job_inv_M_LDN <- ggplot(myData%>%filter(gender=="Male"&city=="London"), aes(x=job_involvement,fill="#00BFC4")) + geom_bar() + labs(title = "Job Involvement Men LDN",x="Ratio") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
+job_inv_F_LDN <- ggplot(myData%>%filter(gender=="Female"&city=="London"), aes(x=job_involvement,fill="#F8766D")) + geom_bar() + labs(title = "Job Involvement Women LDN",x= "Ratio") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
+grid.arrange(job_inv_M_LDN, job_inv_F_LDN, ncol=2)
+```
+
+
+Again for the city of London, for both men and women, the most repeated job involvement ratio is 3 out of 4. 
+
+
+
+The next plots is to show the differences between the job level of men and women. It shows that the distribution looks similar, however, in men most of the men have a job level of 1 and the second highest count of job level is level 2. While most women have a job level of 1, and second most have a job level of level 2.
+
+So, for Barcelona branch: 
 
 ```{r,echo=TRUE,message=FALSE}
-job_lvl_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_level,fill='#F8766D')) + geom_bar() + labs(title = "Job Level Men", x="",fill="") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
-job_lvl_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_level,fill='#F8766D')) + geom_bar() + labs(title = "Job Level Women", x="") + guides(fill="none") + scale_fill_manual(values=c("#F8766D")) + theme_economist()
+job_lvl_M <- ggplot(myData%>%filter(gender=="Male"& city=="Barcelona"), aes(x=job_level,fill='#F8766D')) + geom_bar() + labs(title = "Job Level Men BCN", x="",fill="") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
+job_lvl_F <- ggplot(myData%>%filter(gender=="Female"& city=="Barcelona"), aes(x=job_level,fill='#F8766D')) + geom_bar() + labs(title = "Job Level Women BCN", x="") + guides(fill="none") + scale_fill_manual(values=c("#F8766D")) + theme_economist()
 grid.arrange(job_lvl_M, job_lvl_F, ncol=2)
 ```
 
 
-The following plot is to show the difference is number of managers among men and women. You can see that within this company more men are in the position of manager compared to women.
+And now, for London branch:
+```{r}
+job_lvl_M_ldn <- ggplot(myData%>%filter(gender=="Male"& city=="London"), aes(x=job_level,fill='#F8766D')) + geom_bar() + labs(title = "Job Level Men LDN", x="",fill="") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
+job_lvl_F_ldn <- ggplot(myData%>%filter(gender=="Female"& city=="London"), aes(x=job_level,fill='#F8766D')) + geom_bar() + labs(title = "Job Level Women LDN", x="") + guides(fill="none") + scale_fill_manual(values=c("#F8766D")) + theme_economist()
+grid.arrange(job_lvl_M_ldn, job_lvl_F_ldn, ncol=2)
+```
+
+
+The following plots is to show the difference is number of managers among men and women. 
+
+
+So the difference of number of managers among men and women in Barcelona is shown in the next plot:
+
 ```{r,echo=TRUE,message=FALSE}
-managers_male <- myData%>%filter(gender=="Male")%>%filter(job_role=="Manager")%>%count()
+managers_male <- myData%>%filter(gender=="Male"& city=="Barcelona")%>%filter(job_role=="Manager")%>%count()
 managers_female <- myData%>%filter(gender=="Female")%>%filter(job_role=="Manager")%>%count()
 temp_gender <- c("Male", "Female")
 temp_count <- c(managers_male, managers_female)
 manager_data <- data.frame(temp_gender,temp_count)
-ggplot(manager_data, aes(x=temp_gender,y=temp_count,fill=temp_gender)) + geom_bar(stat="identity")+labs(title="Number of Managers Betwen Men and Women",x="",y="Count") + theme_economist() + guides(fill="none")
+ggplot(manager_data, aes(x=temp_gender,y=temp_count,fill=temp_gender)) + geom_bar(stat="identity")+labs(title="Number of Managers Betwen Men and Women in BCN",x="",y="Count") + theme_economist() + guides(fill="none")
 ```
 
-The next plot is to show the average hourly wage between men and women. It shows that both men and women earn pretty much the same average hourly wage.
+In Barcelona there is a considerable difference in the number of managers, with women being the dominant gender. 
+
+
+And the difference in number of managers among men and women in London branch is represented in the following graph: 
+
+```{r}
+managers_male <- myData%>%filter(gender=="Male"& city=="London")%>%filter(job_role=="Manager")%>%count()
+managers_female <- myData%>%filter(gender=="Female")%>%filter(job_role=="Manager")%>%count()
+temp_gender <- c("Male", "Female")
+temp_count <- c(managers_male, managers_female)
+manager_data <- data.frame(temp_gender,temp_count)
+ggplot(manager_data, aes(x=temp_gender,y=temp_count,fill=temp_gender)) + geom_bar(stat="identity")+labs(title="Number of Managers Betwen Men and Women in LDN",x="",y="Count") + theme_economist() + guides(fill="none")
+```
+
+Here we can see that in London, as opposed to Barcelona, the number of managers is a little more balanced, although there are more male managers in London.
+
+
+
+The next plots is to show the average hourly wage between men and women. It shows that both men and women earn pretty much the same average hourly wage. So, for Barcelona branch : 
+
 
 ```{r,echo=TRUE,message=FALSE}
-temp <- myData%>%filter(gender=="Male")
+temp <- myData%>%filter(gender=="Male"& city=="Barcelona")
 male_hourly <- mean(temp$hourly_rate)
-temp <- myData%>%filter(gender=="Female")
+temp <- myData%>%filter(gender=="Female"& city=="Barcelona")
 female_hourly <- mean(temp$hourly_rate)
 temp_gender <- c("Male","Female")
 temp_avg_hourly_rates <- c(male_hourly,female_hourly)
 hourly_df <- data.frame(temp_gender,temp_avg_hourly_rates)
-ggplot(hourly_df, aes(x=temp_gender,y=temp_avg_hourly_rates,fill=temp_gender)) + geom_bar(stat="identity")+labs(title="Average Hourly Wage Between Men and Women",x="",y="Average hourly wage") + theme_economist() + guides(fill="none")
+ggplot(hourly_df, aes(x=temp_gender,y=temp_avg_hourly_rates,fill=temp_gender)) + geom_bar(stat="identity")+labs(title="Average Hourly Wage Between Men and Women - BCN",x="",y="Average hourly wage") + theme_economist() + guides(fill="none")
 ```
 
-The next four plots show us the education level and education field between men and women in the company. It shows both a very similar distribution in education level and education field. Both men and women have a majority of a education level 3 and for educational field both for men and women the majority has a major in life sciences.
+And for London branch : 
+
+```{r}
+temp <- myData%>%filter(gender=="Male"& city=="London")
+male_hourly <- mean(temp$hourly_rate)
+temp <- myData%>%filter(gender=="Female"& city=="London")
+female_hourly <- mean(temp$hourly_rate)
+temp_gender <- c("Male","Female")
+temp_avg_hourly_rates <- c(male_hourly,female_hourly)
+hourly_df <- data.frame(temp_gender,temp_avg_hourly_rates)
+ggplot(hourly_df, aes(x=temp_gender,y=temp_avg_hourly_rates,fill=temp_gender)) + geom_bar(stat="identity")+labs(title="Average Hourly Wage Between Men and Women - LDN",x="",y="Average hourly wage") + theme_economist() + guides(fill="none")
+```
+
+In both Barcelona and London the Hourly wage is quite balanced.
+
+The following plots show us the education level and education field between men and women in the company in Barcelona branch: 
+
+
+```{r}
+edu_lvl_M <- ggplot(myData%>%filter(gender=="Male"& city=="Barcelona")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level men - BCN", x="Education level") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
+edu_lvl_F <- ggplot(myData%>%filter(gender=="Female"& city=="Barcelona")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level women - BCN", x="Education level") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
+edu_field_M <- ggplot(myData%>%filter(gender=="Male"&city=="Barcelona")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men - BCN", x="")+coord_flip()  + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
+edu_field_F <- ggplot(myData%>%filter(gender=="Male"&city=="Barcelona")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men - BCN", x="")+coord_flip() + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
+grid.arrange(edu_lvl_M, edu_lvl_F,edu_field_M,edu_field_F, ncol=2)
+```
+
+Men and women have similar education field and education level similar in Barcelona branch.
+
+
+And these next four plots show us the education level and education field between men and women in the company in London branch. It shows both a very similar distribution in education level and education field. Both men and women have a majority of a education level 3 and for educational field both for men and women the majority has a majorin life sciences in London branch.
 
 ```{r,echo=TRUE,message=FALSE}
-edu_lvl_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level men", x="Education level") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
-edu_lvl_F <- ggplot(myData%>%filter(gender=="Female")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level women", x="Education level") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
-edu_field_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men", x="")+coord_flip()  + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
-edu_field_F <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men", x="")+coord_flip() + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
+edu_lvl_M <- ggplot(myData%>%filter(gender=="Male"& city=="London")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level men - LDN", x="Education level") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
+edu_lvl_F <- ggplot(myData%>%filter(gender=="Female"& city=="London")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level women - LDN", x="Education level") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
+edu_field_M <- ggplot(myData%>%filter(gender=="Male"&city=="London")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men - LDN", x="")+coord_flip()  + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
+edu_field_F <- ggplot(myData%>%filter(gender=="Male"&city=="London")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men - LDN", x="")+coord_flip() + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
 grid.arrange(edu_lvl_M, edu_lvl_F,edu_field_M,edu_field_F, ncol=2)
 ```
 
 
 ```{r}
-#Roger's plots
 myData %>% filter(department!="") %>% ggplot( aes(x=num_companies_worked, y=monthly_income, color= department)) + geom_point() + geom_smooth(method=lm) +
   scale_color_manual(values=c("#177879", "#fff689", "#165797")) + theme_economist()
 
