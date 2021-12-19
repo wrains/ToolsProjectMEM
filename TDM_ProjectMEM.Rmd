@@ -432,9 +432,9 @@ tribble (
   "London", ldnDiff
 )
 ```
-Here we can see a fairly comparable result between branches, but the takeaway here should be that at both branches there are less men than women. Given that London has a greater number of employees with a similar but less % point difference than Barcelona the disparity we see is greater there than Barcelona when looking at % difference.
+Here we can see a fairly comparable result between branches, but the takeaway here should be that at both branches there are less women than men. At the London branch we see a higher % difference comparing men to women 
 
-This could manifest in women in London feeling a bit more ostracized and the feeling of being in a man's world. as often is felt by women in industry.
+This could manifest in women in London feeling a bit more ostracized and the feeling of being in a man's world. as often is felt by women in many industries including IT.
 
 Let's try to confirm or deny this by looking at employee satisfaction by gender and other key metrics:
 
@@ -474,8 +474,8 @@ p3 <- activeEmployees %>%
   theme(plot.title = element_text(size=11))
 
 p4 <- myData %>% filter(attrition=="Yes") %>% group_by(gender,city) %>% count(gender) %>%
-  ggplot(aes(fill=gender, y=n,x=city, alpha=.5)) + 
-  geom_bar(stat = "identity",position = "dodge") +
+  ggplot(aes(fill=gender, y=n,x=city)) + 
+  geom_bar(stat = "identity",position = "dodge", alpha=.5) +
   labs(title = "Attrition by Gender & City") +
   ylab("Count") +
   theme_ipsum() +
@@ -560,6 +560,12 @@ women_company_work_life_balance <- data.frame(company_worklifebalance,round(comp
 colnames(women_company_work_life_balance) <- c("Work life balance","Company","EU","Spain","UK")
 women_company_work_life_balance
 ```
+
+### Outside data conclusion
+
+This is quite concerning for the company as we see a > 10% pt difference between the top levels of what typical in industry for work life balance. Comparatively to the industry we'd think that among employees the company would not be seen favorably for work life balance. To see this gap especially for women is equally concerning as the gap is larger than that for men. 
+
+This could lead to issues for the company to attain and retain top talent as clearly other companies rank better in this regard. 
 
 
 A linear model has also been developed to predict the salary that a new employee can expect to earn, depending on the level of the position he/she joins the company. 
@@ -969,7 +975,12 @@ For employees classified as B and C, the same trend is followed.
 
 Although there is a slight difference in salaries between men and women, we can conclude that Barcelona and London follow the same trend and that the salary difference between men and women is not very large.
 
+### Concern 1 Conclusion
 
+In many regards in looking into these items we see that there are very minimal differences and only a few key takeaways moving forward. The key takeaways being:
+
+- In general the company could at both branches promote the hiring of more women to reach greater equality in the workplace. Maybe some outreach here at the collegiate level with women engineering organizations or even at the high school level would attract more women to company in the future. London actually has a further discrepancy in the regard despite the CEO seeing London as an example moreso - maybe she needs to view the situation less as Barcelona branch needing to reach to London's structure. 
+- The findings from our research on outside data are particularly compelling here and should be of focus. Although the company does fall in line for the lowest work life balance, it is clear that at the top levels of work-life balance, the company does not compare well to the rest of the industry. This could cause major problems in hiring and retaining top talent as this is a very critical component that potential employees take into account. Particularly with websites such as Glassdoor.com we presume that it is clear to people that do some research that this is indeed the case.
 
 
 ## Concern 2 - Department Attitudes
