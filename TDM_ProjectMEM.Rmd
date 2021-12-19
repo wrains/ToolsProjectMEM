@@ -988,18 +988,22 @@ Let's take a look at all numerical variables and how they differ between departm
 bcnActive=activeEmployees%>%filter(city=="Barcelona")
 ldnActive=activeEmployees%>%filter(city=="London")
 
-conc2Arr=c("work_life_balance","relationship_satisfaction","performance_rating","job_satisfaction","job_involvement")
+conc2Arr=c("work_life_balance","relationship_satisfaction","performance_rating","job_satisfaction")
 
-conc2Arr2=c("environment_satisfaction")
+conc2Arr2=c("job_involvement","environment_satisfaction")
 
 
 bcnActive%>%filter(department!="")%>%group_by(department)%>%select(conc2Arr)%>%summarise_all(mean)
+bcnActive%>%filter(department!="")%>%group_by(department)%>%select(conc2Arr2)%>%summarise_all(mean)
+ldnActive%>%filter(department!="")%>%group_by(department)%>%select(conc2Arr)%>%summarise_all(mean)
 ldnActive%>%filter(department!="")%>%group_by(department)%>%select(conc2Arr2)%>%summarise_all(mean)
 
 
 ```
 
+
 From this output we can see the following:
+
 - 
 
 # Plots of gender across different variables
@@ -1209,6 +1213,18 @@ atr_pred_train %>%
   kbl(caption = "Random Forest Model Performance - Train") %>%
     kable_classic(full_width = F)
 ```
+
+In order to choose the variables we ran a LM test to see which variables were relevant. 
+
+The most relevant variables are:
+- Business travel : Travel Frequently
+- Distance from home
+- Enviroment Satisfaction
+- Job involvement
+- Job Satisfaction
+- Num companies worked
+- Percent salary hike
+- Over Time: Yes (This one the most)
 
 # References 
 
