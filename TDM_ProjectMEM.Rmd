@@ -19,6 +19,7 @@ library(janitor)
 library(lubridate)
 library(gridExtra)
 library(broom)
+library(ggthemes)
 ```
 
 <style>
@@ -256,7 +257,9 @@ Throughout our analysis it will be of value to see if there is a divergence anyw
 ### Cleaning gender data
 In order to detect the mismatch in data we will simply plot a barchart of gender on the x-axis, and it will show us the composition of the gender variable.
 ```{r}
-ggplot(myData, aes(x=gender)) + geom_bar() 
+ggplot(myData, aes(x=gender)) + geom_bar(fill="#165797") +
+  labs(y="",x="") + theme_economist()
+
 ```
 
 After plotting the barchart we can see that there are different ways in which the gender is written, summed up below:
@@ -282,7 +285,8 @@ After running the code above the gender is cleaned up and is now only either Mal
 
 ```{r}
 
-myData %>% ggplot(aes(x=gender)) + geom_bar()
+myData %>% ggplot(aes(x=gender)) + geom_bar(fill="#165797") +
+  labs(y="",x="") + theme_economist()
 
 ```
 
@@ -313,7 +317,8 @@ We can see the composition of the marital status variable using a simple bar cha
 
 ```{r,echo=TRUE,message=FALSE}
 myData$marital_status <- as.character(myData$marital_status)
-ggplot(myData, aes(x=marital_status)) + geom_bar() 
+ggplot(myData, aes(marital_status)) + geom_bar(fill="#165797") +
+  labs(y="",x="") + theme_economist()
 ```
 
 The bar chart shows us that the data of marital_status is grouped in the following way:
@@ -340,7 +345,8 @@ myData$marital_status <- myData$marital_status <- ifelse(myData$marital_status =
 
 ```{r,echo=TRUE,message=FALSE}
 myData$marital_status <- as.character(myData$marital_status)
-ggplot(myData%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar() 
+ggplot(myData%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar(fill="#165797") +
+  labs(y="",x="") + theme_economist()
 ```
 
 We can see that the variable marital status has been cleaned to Divorced, Married, and Single
@@ -385,7 +391,9 @@ activeEmployees %>% group_by(city) %>% summarise(cityCount = n()) %>%
   geom_bar(stat = "identity") + 
   geom_label(aes(label = cityCount), show.legend = FALSE) +
   labs(title = "Count of Employees by branch", x= "City", y="Count") + 
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  scale_fill_manual(values=c("#149858", "#fff689"))
+
 
 ```
 
@@ -411,9 +419,10 @@ activeEmployees %>% group_by(city,gender) %>% count(gender) %>% cbind(cityTotals
              position = position_dodge(width = .85),) +
   geom_label(aes(label = scales::percent(pct)), show.legend = FALSE,
              position = position_dodge(width = .85),
-             vjust = 2.5) +
-  theme_minimal() + 
-  labs (y = "Count", x="City", title="Gender Count by Branch")
+             vjust = 1.75) +
+  theme_economist() + 
+  labs (y = "Count", x="City", title="Gender Count by Branch") +
+  scale_fill_manual(values=c("#149858", "#fff689"))
 
 
 bcnDiff = scales::percent((maleBCN-(totalBCN-maleBCN))/(totalBCN-maleBCN))
@@ -472,12 +481,13 @@ p3 <- activeEmployees %>%
 p4 <- myData %>% group_by(gender,city,attrition) %>% count(gender,attrition) %>%
   ggplot(aes(fill=attrition, y=n, group=city,x=gender)) + 
   geom_bar(stat = "identity",position = "dodge") +
-  labs(title = "Attrition by Gender & City") +
+  labs(title = "Attrition by Gender & City - Barcelona & Spain resp.") +
   ylab("Count") +
   theme_ipsum() +
   theme(axis.title.x = element_blank(),
         plot.title = element_text(size=11),
-        legend.title=element_blank()) 
+        legend.title=element_blank()) +
+  scale_fill_manual(values=c("#149858", "#fff689"))
 
 # myData %>% 
 #   ggplot(aes(fill=gender, y=attrition, x=city)) + 
@@ -588,7 +598,8 @@ We can see from this model that gender is not a significant (in terms of probabi
 
 Plot the bar chart of job roles: 
 ```{r}
-ggplot(myData, aes(job_role)) + geom_bar()  + coord_flip()
+ggplot(myData, aes(job_role)) + geom_bar(fill="#165797") +
+  labs(y="Count",x="") + theme_economist() + coord_flip()
 ```
 
 
@@ -686,7 +697,7 @@ summary_gender_ABCanalysis_A
 
 ggplot(summary_gender_ABCanalysis_A,aes(x='',y=Percen.,fill=Gender))+
   ggtitle("Gender classification for A employees")+
-  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  geom_bar(stat = "Identity",width = 2,color="black")+
   coord_polar("y",start = 0)+
   theme_void()
 #As for the B & C employees : 
@@ -704,7 +715,7 @@ summary_gender_ABCanalysis_BC
 
 ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
   ggtitle("Gender classification for B&C employees")+
-  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  geom_bar(stat = "Identity",width = 2,color="black")+
   coord_polar("y",start = 0)+
   theme_void()
 
@@ -720,7 +731,7 @@ The objective of this ABC analysis is to see what is the difference in gender be
 We will start with Barcelona: 
 
 ```{r}
-################################Barcelone################################
+################################Barcelona################################
 
 Barcelona <- myData %>% filter(city == "Barcelona")
 #Job Role
@@ -745,9 +756,6 @@ Percentage <- c()
 # Get the salaries percentage for each item
 for (i in ABC_analysis1$Monthly_Income){
   Percentage <- append(Percentage, i/total_salary * 100)}
-
-# Import dplyr package
-library(dplyr)
 
 # Add the percentage column to  data frame
 ABC_analysis1 <- (mutate(ABC_analysis1,Percentage))
@@ -783,7 +791,8 @@ ggplot(data = ABC_analysis1, aes(x = classification)) +
   labs(title = "Employee Clasification",
        subtitle = "Following the Pareto's Law/ Criteria",
        x = "Employee Clasification",
-       y = "Count")
+       y = "Count") +
+  scale_fill_manual(values=c("#e03616", "#fff689", "#149858"))
 #Summary table : 
 summary <- count(ABC_analysis1, classification)
 summary$percentage <- summary$n / sum(summary$n) * 100
@@ -814,7 +823,7 @@ summary_gender_ABCanalysis_A
 
 ggplot(summary_gender_ABCanalysis_A,aes(x='',y=Percen.,fill=Gender))+
   ggtitle("Gender classification for A employees")+
-  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  geom_bar(stat = "Identity",width = 2,color="black")+
   coord_polar("y",start = 0)+
   theme_void()
 #As for the B & C employees : 
@@ -832,7 +841,7 @@ summary_gender_ABCanalysis_BC
 
 ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
   ggtitle("Gender classification for B&C employees")+
-  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  geom_bar(stat = "Identity",width = 2,color="black")+
   coord_polar("y",start = 0)+
   theme_void()
 
@@ -913,7 +922,8 @@ ggplot(data = ABC_analysis1, aes(x = classification)) +
   labs(title = "Employee Clasification",
        subtitle = "Following the Pareto's Law/ Criteria",
        x = "Employee Clasification",
-       y = "Count")
+       y = "Count") +
+  scale_fill_manual(values=c("#e03616", "#fff689", "#149858"))
 
 #Sumamry table:
 summary <- count(ABC_analysis1, classification)
@@ -943,7 +953,7 @@ summary_gender_ABCanalysis_A
 
 ggplot(summary_gender_ABCanalysis_A,aes(x='',y=Percen.,fill=Gender))+
   ggtitle("Gender classification for A employees")+
-  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  geom_bar(stat = "Identity",width = 2,color="black")+
   coord_polar("y",start = 0)+
   theme_void()
 #As for the B & C employees : 
@@ -961,7 +971,7 @@ summary_gender_ABCanalysis_BC
 
 ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
   ggtitle("Gender classification for B&C employees")+
-  geom_bar(stat = "Identity",width = 2,color="Yellow")+
+  geom_bar(stat = "Identity",width = 2,color="black")+
   coord_polar("y",start = 0)+
   theme_void()
 
@@ -1011,18 +1021,21 @@ Before looking into the attitude per department it is good to understand the num
 ```{r}
 ggplot(myData%>%filter(department!=""), 
        aes(department,fill=department)) + 
-  geom_bar()  + 
-  coord_flip() + 
-  labs(y= "Number of employees", 
-       x = "Department",
-       fill= "Department")
+  geom_bar()  +
+  labs(y= "", 
+       x = "",
+       fill= "",
+       title = "Count of Employees by Department") +
+  scale_fill_manual(values=c("#177879", "#fff689", "#165797")) + 
+  theme_economist() +
+  guides(fill=FALSE)
 ```
 
 Two variables that will tell us a lot about the attitude of a certain department are the attrition and the over time. When employees leave the company is a clear indication that they either are not content with their work environment or they received a better offer from a different company. And typically over time is not valued by most employees. The following two plots are the percentage of employees with attrition yes in the dataset, and the percentage of employees that had to do overtime.
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources" & attrition!="")
-env_sat_RnD <- myData%>%filter(department=="Research and Development" & attrition!="")
+env_sat_RnD <- myData%>%filter(department=="Research & Development" & attrition!="")
 env_sat_sales <- myData%>%filter(department=="Sales" & attrition!="")
 
 departments <- c("Human Resources",
@@ -1039,13 +1052,13 @@ percentages <- data.frame(departments,perc_env_satis)
 ggplot(percentages,
        aes(x=departments,y=perc_env_satis,fill=departments)) +
   geom_bar(position="dodge",stat = "identity")  +
-  coord_flip() +
-  labs(x = "Percentage attrition = Yes",fill = "Department",y="Percentage")
+  labs(x = "Percentage attrition = Yes",fill = "Department",y="Percentage") +
+  scale_fill_manual(values=c("#177879", "#fff689", "#165797"))
 ```
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources" & over_time!="")
-env_sat_RnD <- myData%>%filter(department=="Research and Development" & over_time!="")
+env_sat_RnD <- myData%>%filter(department=="Research & Development" & over_time!="")
 env_sat_sales <- myData%>%filter(department=="Sales" & over_time!="")
 
 departments <- c("Human Resources",
@@ -1062,15 +1075,15 @@ percentages <- data.frame(departments,perc_env_satis)
 ggplot(percentages,
        aes(x=departments,y=perc_env_satis,fill=departments)) +
   geom_bar(position="dodge",stat = "identity")  +
-  coord_flip() +
-  labs(x = "Over time = Yes",fill = "Department",y="Percentage")
+  labs(x = "Over time = Yes",fill = "Department",y="Percentage") +
+  scale_fill_manual(values=c("#177879", "#fff689", "#165797"))
 ```
 
 The following plot is the percentage of employees that left the company and that indicated they had to perform over time. These plots regarding overtime and attrition show that in all three departments it is very similar.
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources" & attrition!="" & attrition == "Yes")
-env_sat_RnD <- myData%>%filter(department=="Research and Development" & attrition!="" & attrition == "Yes")
+env_sat_RnD <- myData%>%filter(department=="Research & Development" & attrition!="" & attrition == "Yes")
 env_sat_sales <- myData%>%filter(department=="Sales" & attrition!="" & attrition == "Yes")
 
 departments <- c("Human Resources",
@@ -1087,15 +1100,15 @@ percentages <- data.frame(departments,perc_env_satis)
 ggplot(percentages,
        aes(x=departments,y=perc_env_satis,fill=departments)) +
   geom_bar(position="dodge",stat = "identity")  +
-  coord_flip() +
-  labs(x = "Attrition = Yes + Over time = Yes",fill = "Department",y="Percentage")
+  labs(x = "Attrition = Yes + Over time = Yes",fill = "Department",y="Percentage") +
+  scale_fill_manual(values=c("#177879", "#fff689", "#165797"))
 
 ```
 
 
 In order to understand the attitude per department based on the variables given in the dataset, first we need to determine the relationship between certain variables and see how they influence each other, we can start of by doing a very simple linear regression model. To our understanding the attitude of an employee is determined during its performance review which results in their performance rating, so for our linear regression model we will use the variable performance_rating as the dependent variable. After going through the significance of all the other variables, the following variables seem to have the highest significance with performance_rating: percent_salary_hike and years_in_current_role. This results in the following linear regression model with the following variables:
   
-  ```{r}
+```{r}
 model <- lm(performance_rating ~ percent_salary_hike + years_in_current_role,
             data = myData)
 summary(model)
@@ -1107,7 +1120,7 @@ In order to understand the attitude of the different departments, first, the fol
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources")
-env_sat_RnD <- myData%>%filter(department=="Research and Development")
+env_sat_RnD <- myData%>%filter(department=="Research & Development")
 env_sat_sales <- myData%>%filter(department=="Sales")
 
 departments <- c("Human Resources",
@@ -1123,15 +1136,15 @@ datas <- data.frame(departments,perc_env_satis)
 ggplot(datas,
        aes(x=departments,y=perc_env_satis,fill=departments)) +
   geom_bar(position="dodge",stat="identity")  +
-  coord_flip() +
-  labs(x = "Department",fill = "Department",y="Average percentage salary hike")
+  labs(x = "Department",fill = "Department",y="Average percentage salary hike") +
+  scale_fill_manual(values=c("#177879", "#fff689", "#165797"))
 ```
 
 And secondly, the following plot is made with the mean of the years in the current role per department, which is one of the variables in the linear regression model above.
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources")
-env_sat_RnD <- myData%>%filter(department=="Research and Development")
+env_sat_RnD <- myData%>%filter(department=="Research & Development")
 env_sat_sales <- myData%>%filter(department=="Sales")
 
 departments <- c("Human Resources",
@@ -1147,8 +1160,8 @@ datas <- data.frame(departments,perc_env_satis)
 ggplot(datas,
        aes(x=departments,y=perc_env_satis,fill=departments)) +
   geom_bar(position="dodge",stat="identity")  +
-  coord_flip() +
-  labs(x = "Department",fill = "Department",y="Average years in current role")
+  labs(x = "Department",fill = "Department",y="Average years in current role") +
+  scale_fill_manual(values=c("#177879", "#fff689", "#165797"))
 ```
 
 The plots of the averages of the variables in the linear regression model are very similar in each department, therefore the CEO should not be very concerned about the attitudes in each department as there does not seem to be a very big difference in the data.
@@ -1159,16 +1172,16 @@ The plots of the averages of the variables in the linear regression model are ve
 The next plot is to show the distribution of job involvement between men and women. It shows that the distribution of job involvement is similar between men and women.
 
 ```{r,echo=TRUE,message=FALSE}
-job_inv_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_involvement)) + geom_bar() + labs(title = "Job involvement men",x="Job involvement factor")
-job_inv_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_involvement)) + geom_bar() + labs(title = "Job involvement women",x= "Job involvement factor")
+job_inv_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_involvement,fill="#00BFC4")) + geom_bar() + labs(title = "Job Involvement Men",x="") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
+job_inv_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_involvement,fill="#F8766D")) + geom_bar() + labs(title = "Job Involvement Women",x= "") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
 grid.arrange(job_inv_M, job_inv_F, ncol=2)
 ```
 
 The next plot is to show the differences between the job level of men and women. It shows that the distribution looks similar, however, in men most of the men have a job level of 1 and the second highest count of job level is level 2. While most women have a job level of 1, and second most have a job level of level 2.
 
 ```{r,echo=TRUE,message=FALSE}
-job_lvl_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_level)) + geom_bar() + labs(title = "Job level men", x="Job level factor")
-job_lvl_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_level)) + geom_bar() + labs(title = "Job level women", x="Job level factor")
+job_lvl_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_level,fill='#F8766D')) + geom_bar() + labs(title = "Job Level Men", x="",fill="") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
+job_lvl_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_level,fill='#F8766D')) + geom_bar() + labs(title = "Job Level Women", x="") + guides(fill="none") + scale_fill_manual(values=c("#F8766D")) + theme_economist()
 grid.arrange(job_lvl_M, job_lvl_F, ncol=2)
 ```
 
@@ -1180,7 +1193,7 @@ managers_female <- myData%>%filter(gender=="Female")%>%filter(job_role=="Manager
 temp_gender <- c("Male", "Female")
 temp_count <- c(managers_male, managers_female)
 manager_data <- data.frame(temp_gender,temp_count)
-ggplot(manager_data, aes(x=temp_gender,y=temp_count)) + geom_bar(stat="identity")+labs(title="Number of managers betwen men and women",x="Gender",y="number of managers")
+ggplot(manager_data, aes(x=temp_gender,y=temp_count,fill=temp_gender)) + geom_bar(stat="identity")+labs(title="Number of Managers Betwen Men and Women",x="",y="Count") + theme_economist() + guides(fill="none")
 ```
 
 The next plot is to show the average hourly wage between men and women. It shows that both men and women earn pretty much the same average hourly wage.
@@ -1193,25 +1206,26 @@ female_hourly <- mean(temp$hourly_rate)
 temp_gender <- c("Male","Female")
 temp_avg_hourly_rates <- c(male_hourly,female_hourly)
 hourly_df <- data.frame(temp_gender,temp_avg_hourly_rates)
-ggplot(hourly_df, aes(x=temp_gender,y=temp_avg_hourly_rates)) + geom_bar(stat="identity")+labs(title="Average hourly wage between men and women",x="Gender",y="Average hourly wage")
+ggplot(hourly_df, aes(x=temp_gender,y=temp_avg_hourly_rates,fill=temp_gender)) + geom_bar(stat="identity")+labs(title="Average Hourly Wage Between Men and Women",x="",y="Average hourly wage") + theme_economist() + guides(fill="none")
 ```
 
 The next four plots show us the education level and education field between men and women in the company. It shows both a very similar distribution in education level and education field. Both men and women have a majority of a education level 3 and for educational field both for men and women the majority has a major in life sciences.
 
 ```{r,echo=TRUE,message=FALSE}
-edu_lvl_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education)) + geom_bar() + labs(title = "Education level men", x="Education level")
-edu_lvl_F <- ggplot(myData%>%filter(gender=="Female")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education)) + geom_bar() + labs(title = "Education level women", x="Education level")
-edu_field_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field)) + geom_bar() + labs(title = "Education field men", x="Education field")+coord_flip()
-edu_field_F <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field)) + geom_bar() + labs(title = "Education field men", x="Education field")+coord_flip()
+edu_lvl_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level men", x="Education level") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
+edu_lvl_F <- ggplot(myData%>%filter(gender=="Female")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level women", x="Education level") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
+edu_field_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men", x="")+coord_flip()  + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
+edu_field_F <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men", x="")+coord_flip() + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
 grid.arrange(edu_lvl_M, edu_lvl_F,edu_field_M,edu_field_F, ncol=2)
 ```
 
 
 ```{r}
 #Roger's plots
-myData %>% filter(department!="") %>% ggplot( aes(x=num_companies_worked, y=monthly_income, color= department)) + geom_point() + geom_smooth(method=lm)
+myData %>% filter(department!="") %>% ggplot( aes(x=num_companies_worked, y=monthly_income, color= department)) + geom_point() + geom_smooth(method=lm) +
+  scale_color_manual(values=c("#177879", "#fff689", "#165797")) + theme_economist()
 
-ggplot(myData, aes(x=num_companies_worked, y=percent_salary_hike)) + geom_point() + geom_smooth(method=lm)
+ggplot(myData, aes(x=num_companies_worked, y=percent_salary_hike)) + geom_point() + geom_smooth(method=lm) + theme_economist() + labs(title = "Number of Companies Worked x % Salary Hike",y="% Salary Hike", x="# Companies Worked")
 ```
 
 
@@ -1232,8 +1246,8 @@ people_left_bcn <- myData %>% select( attrition, department, city, job_role)
 
 people_left_bcn <- as.data.frame( people_left_bcn %>% filter( attrition=="Yes" & city == "Barcelona") ) 
 
-ggplot(people_left_bcn, aes(x=department)) + geom_bar(stat="count", fill=alpha("navyblue", 0.7))  +
-  theme_minimal() + coord_polar(start = 0) 
+ggplot(people_left_bcn, aes(x=department)) + geom_bar(stat="count", fill=alpha(c("#177879", "#fff689", "#165797"), 0.7))  +
+  theme_minimal() + coord_polar(start = 0)
 
 ```
 
@@ -1253,7 +1267,7 @@ people_left_ldn <- myData %>% select( attrition, department, city, job_role)
 
 people_left_ldn <- as.data.frame( people_left_ldn %>% filter( attrition=="Yes" & city == "London") ) 
 
-ggplot(people_left_ldn, aes(x=department)) + geom_bar(stat="count", fill=alpha("navyblue", 0.7))  +
+ggplot(people_left_ldn, aes(x=department)) + geom_bar(stat="count", fill=alpha(c("#177879", "#fff689", "#165797"), 0.7))  +
   theme_minimal() + coord_polar(start = 0)
 
 
