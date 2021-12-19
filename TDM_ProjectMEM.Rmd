@@ -1168,6 +1168,9 @@ ggplot(datas,
 
 The plots of the averages of the variables in the linear regression model are very similar in each department, therefore the CEO should not be very concerned about the attitudes in each department as there does not seem to be a very big difference in the data.
 
+### Conclusion concern 2
+
+In many regards in looking into these variables of data we see that there are very minimal differences between the different departments of the company. Therefore there should not be a concern as long as these variables are maintained under the same circumstances.
 
 # Plots of gender across different variables
 
