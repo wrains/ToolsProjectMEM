@@ -1176,8 +1176,8 @@ We will start with Barcelona and then London.
 So, for Barcelona the job involvement between men and women is shown in the following graph:  
 
 ```{r,echo=TRUE,message=FALSE}
-job_inv_M_BCN <- ggplot(myData%>%filter(gender=="Male"& city=="Barcelona"), aes(x=job_involvement,fill="#00BFC4")) + geom_bar() + labs(title = "Job Involvement Men BCN",x="Ratio") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
-job_inv_F_BCN <- ggplot(myData%>%filter(gender=="Female"& city=="Barcelona"), aes(x=job_involvement,fill="#F8766D")) + geom_bar() + labs(title = "Job Involvement Women BCN",x= "Ratio") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
+job_inv_M_BCN <- ggplot(myData%>%filter(gender=="Male"& city=="Barcelona"), aes(x=job_involvement,fill="#00BFC4")) + geom_bar() + labs(title = "Job Involvement Men BCN",x="Ratio") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()+ theme(plot.title = element_text(size=12))
+job_inv_F_BCN <- ggplot(myData%>%filter(gender=="Female"& city=="Barcelona"), aes(x=job_involvement,fill="#F8766D")) + geom_bar() + labs(title = "Job Involvement Women BCN",x= "Ratio") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()+ theme(plot.title = element_text(size=12))
 grid.arrange(job_inv_M_BCN, job_inv_F_BCN, ncol= 2)
 ```
 
@@ -1186,8 +1186,8 @@ We can observe that, for both men and women, the majority of job involvement is 
 Now we will plot the graph of job involvement for the city of London: 
 
 ```{r}
-job_inv_M_LDN <- ggplot(myData%>%filter(gender=="Male"&city=="London"), aes(x=job_involvement,fill="#00BFC4")) + geom_bar() + labs(title = "Job Involvement Men LDN",x="Ratio") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
-job_inv_F_LDN <- ggplot(myData%>%filter(gender=="Female"&city=="London"), aes(x=job_involvement,fill="#F8766D")) + geom_bar() + labs(title = "Job Involvement Women LDN",x= "Ratio") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
+job_inv_M_LDN <- ggplot(myData%>%filter(gender=="Male"&city=="London"), aes(x=job_involvement,fill="#00BFC4")) + geom_bar() + labs(title = "Job Involvement Men LDN",x="Ratio") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()+ theme(plot.title = element_text(size=12))
+job_inv_F_LDN <- ggplot(myData%>%filter(gender=="Female"&city=="London"), aes(x=job_involvement,fill="#F8766D")) + geom_bar() + labs(title = "Job Involvement Women LDN",x= "Ratio") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()+ theme(plot.title = element_text(size=12))
 grid.arrange(job_inv_M_LDN, job_inv_F_LDN, ncol=2)
 ```
 
@@ -1280,10 +1280,10 @@ The following plots show us the education level and education field between men 
 
 
 ```{r}
-edu_lvl_M <- ggplot(myData%>%filter(gender=="Male"& city=="Barcelona")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level men - BCN", x="Education level") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
-edu_lvl_F <- ggplot(myData%>%filter(gender=="Female"& city=="Barcelona")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level women - BCN", x="Education level") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
-edu_field_M <- ggplot(myData%>%filter(gender=="Male"&city=="Barcelona")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men - BCN", x="")+coord_flip()  + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
-edu_field_F <- ggplot(myData%>%filter(gender=="Male"&city=="Barcelona")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men - BCN", x="")+coord_flip() + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
+edu_lvl_M <- ggplot(myData%>%filter(gender=="Male"& city=="Barcelona")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level men - BCN", x="Education level") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist() + theme(plot.title = element_text(size=12))
+edu_lvl_F <- ggplot(myData%>%filter(gender=="Female"& city=="Barcelona")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level women - BCN", x="Education level") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()+ theme(plot.title = element_text(size=12))
+edu_field_M <- ggplot(myData%>%filter(gender=="Male"&city=="Barcelona")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men - BCN", x="")+coord_flip()  + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()+ theme(plot.title = element_text(size=10))
+edu_field_F <- ggplot(myData%>%filter(gender=="Male"&city=="Barcelona")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men - BCN", x="")+coord_flip() + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()+ theme(plot.title = element_text(size=10))
 grid.arrange(edu_lvl_M, edu_lvl_F,edu_field_M,edu_field_F, ncol=2)
 ```
 
@@ -1293,10 +1293,10 @@ Men and women have similar education field and education level similar in Barcel
 And these next four plots show us the education level and education field between men and women in the company in London branch. It shows both a very similar distribution in education level and education field. Both men and women have a majority of a education level 3 and for educational field both for men and women the majority has a majorin life sciences in London branch.
 
 ```{r,echo=TRUE,message=FALSE}
-edu_lvl_M <- ggplot(myData%>%filter(gender=="Male"& city=="London")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level men - LDN", x="Education level") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
-edu_lvl_F <- ggplot(myData%>%filter(gender=="Female"& city=="London")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level women - LDN", x="Education level") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
-edu_field_M <- ggplot(myData%>%filter(gender=="Male"&city=="London")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men - LDN", x="")+coord_flip()  + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()
-edu_field_F <- ggplot(myData%>%filter(gender=="Male"&city=="London")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men - LDN", x="")+coord_flip() + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()
+edu_lvl_M <- ggplot(myData%>%filter(gender=="Male"& city=="London")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level men - LDN", x="Education level") + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist()+ theme(plot.title = element_text(size=12))
+edu_lvl_F <- ggplot(myData%>%filter(gender=="Female"& city=="London")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education,fill="")) + geom_bar() + labs(title = "Education level women - LDN", x="Education level") + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()+ theme(plot.title = element_text(size=12))
+edu_field_M <- ggplot(myData%>%filter(gender=="Male"&city=="London")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men - LDN", x="")+coord_flip()  + guides(fill="none") + scale_fill_manual(values=c("#00BFC4")) + theme_economist() + theme(plot.title = element_text(size=10))
+edu_field_F <- ggplot(myData%>%filter(gender=="Male"&city=="London")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field,fill="")) + geom_bar() + labs(title = "Education field men - LDN", x="")+coord_flip() + guides(fill="none") + scale_fill_manual(values="#F8766D") + theme_economist()+ theme(plot.title = element_text(size=10))
 grid.arrange(edu_lvl_M, edu_lvl_F,edu_field_M,edu_field_F, ncol=2)
 ```
 
