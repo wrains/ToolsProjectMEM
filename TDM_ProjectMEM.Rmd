@@ -1361,39 +1361,9 @@ ggplot(people_left_ldn, aes(x=department)) + geom_bar(stat="count", fill=alpha(c
 
 As we can see, once again, Research and development is the department that is most affected in terms of personnel departures.
 
+In order to determine which factors cause a person to leave the company, an attrition model will be performed.
 
-Now we will consider the concern regarding *succession strategies*. 
-
-We need to start this by creating a dataset and finding specifically the people that are in leadership roles and then examine (in most cases) the next highest role in that department to get a sense of if someone is right to be promoted. Generally we want to see years experience, high performance and job satisfaction so that we know someone has the ability, experience and desire to hold the next position. If we do not see these candidates for certain roles then we will suggest looking at potentially an external hire for that position. 
-
-```{r}
-activeEmployees%>%tabyl(department,job_role)
-
-depts=activeEmployees%>%filter(department!="")%>%pull(department)%>%unique()
-for (dept in depts) {
-  print(dept)
-  print(activeEmployees %>% filter(department==dept)%>%tabyl(job_role))
-  
-}
-```
-In view of these results, we can determine which roles are the highest looking at which have the lowest percentage of people.
-
-As you can see the top roles in the Research & Development department from highest to lowest are:
-- Manager
-- Research Director
-
-After these we find Healthcare Representative and Manufacturing Director, which are at the same level.
-
-In the case of the Sales department:
-- Manager
-- Sales Representative
-- Sales Executive
-
-And finally, in Human Resources:
-- Manager
-- Human Resources
-
-### Attrition model
+#### Attrition model
 
 It is important which are the variables to take into account that make a person want to leave the company. For this reason, it was decided to create a linear regression model where we can determine the most influential variables for a person to make this decision.
 
@@ -1507,7 +1477,141 @@ atr_ranger_wf %>%
 ```
 The accuracy of the Test Set is almost 10 points lower than that of the Train Set. This is 0.82, although it has decreased, it can be concluded that the model fits very well, considering that an accuracy of this level is good.
 
-Therefore, it is concluded that the variables that have been chosen in the first moment are correct and directly affect the attrition of people. 
+Therefore, it is concluded that the variables that have been chosen in the first moment are correct and directly affect the attrition of people.
+
+#### Succession Strategies
+
+Now we will consider the concern regarding *succession strategies*. 
+
+We need to start this by creating a dataset and finding specifically the people that are in leadership roles and then examine (in most cases) the next highest role in that department to get a sense of if someone is right to be promoted. Generally we want to see years experience, high performance and job satisfaction so that we know someone has the ability, experience and desire to hold the next position. If we do not see these candidates for certain roles then we will suggest looking at potentially an external hire for that position. 
+
+```{r}
+activeEmployees%>%tabyl(department,job_role,job_level)
+
+depts=activeEmployees%>%filter(department!="")%>%pull(department)%>%unique()
+for (dept in depts) {
+  print(dept)
+  print(activeEmployees %>% filter(department==dept)%>%tabyl(job_role, job_level))
+  
+}
+```
+In view of these results, we can determine which roles are the highest looking at which have the lowest percentage of people.
+
+As you can see the top roles in the Research & Development department from highest to lowest are:
+- Manager
+- Research Director
+
+After these we find Healthcare Representative and Manufacturing Director, which are at the same level.
+
+In the case of the Sales department:
+- Manager
+- Sales Representative
+- Sales Executive
+
+And finally, in Human Resources:
+- Manager
+- Human Resources
+
+We will now try to search candidates that could be promoted in to a higher role.
+
+We are going to start with those who has a job level equal to 4 out of 5.
+
+##### Job Level 4
+
+```{r}
+depts1 =activeEmployees%>%filter(department!="") %>% filter(job_level == 4)%>%unique()
+
+#The plot
+ggplot(data = depts1, aes(x = department)) +
+  geom_bar(aes(fill = department)) + 
+  labs(title = "Employees at Level 4 by Department",
+       x = "Departments",
+       y = "Employees at level 4") +
+  scale_fill_manual(values=c("#e03616", "#fff689", "#149858"))
+```
+
+There is a lot of people in job level 4, so now we need to filter using more variables to find the one we want.
+As explained before we will need to filter by job satisfaction, performance rating and years since last promotion. we establish that we need to find the perfect one, so the job satisfaction and the performance rating has to be 4.
+
+```{r}
+depts1 =activeEmployees%>%filter(department!="") %>% filter(job_level == 4) %>% filter(job_satisfaction == 4) %>% filter(performance_rating == 4)%>%unique()
+
+ggplot(data = depts1, aes(x = department)) +
+  geom_bar(aes(fill = department)) +
+  labs(title = "Num. Candidates for a Promotion",
+       x = "Departments",
+       y = "Candidates for a Promotion") +
+  scale_fill_manual(values=c("#e03616", "#fff689", "#149858"))
+
+depts1 %>% tabyl(department)
+
+```
+Applying the filters mentioned above, we found 1 candidate for promotion in the Sales and Human Resources departments. For Research & Development we have 6 candidates. Although there are many more than in the other departments, there are also many more people in this one. However, we will filter by years since last promotion to see how many candidates should be promoted first.
+
+```{r}
+depts1 =activeEmployees%>%filter(department!="") %>% filter(job_level == 4) %>% filter(job_satisfaction == 4) %>% filter(performance_rating == 4) %>% filter(department == "Research & Development")%>%unique()
+
+ggplot(data = depts1, aes(x = years_since_last_promotion)) +
+  geom_bar(aes(fill = years_since_last_promotion)) +
+  labs(title = "Years Since Last Promotion of the Candidates",
+       x = "Years Since Last Promotion",
+       y = "Candidates for a Promotion") +
+  guides(fill="none") + scale_fill_manual(values="#F8766D")
+
+depts1 %>% tabyl(years_since_last_promotion)
+```
+In the case of this department, the person to be promoted is the one who has not been promoted for 11 years. 
+
+Now let's look at job level 3.
+
+##### Job Level 3
+
+The philosophy for choosing candidates will be the same as in the previous case. This time we will go straight to the point and look at which profiles can be promoted, based on job satisfaction, performance rating and if necessary we will look at the years since the last promotion in each department, as we have done in the previous case.
+
+```{r}
+depts2 =activeEmployees%>%filter(department!="") %>% filter(job_level == 3) %>% filter(job_satisfaction == 4) %>% filter(performance_rating == 4)%>%unique()
+
+ggplot(data = depts2, aes(x = department)) +
+  geom_bar(aes(fill = department)) +
+  labs(title = "Num. Candidates for a Promotion",
+       x = "Departments",
+       y = "Candidates for a Promotion") +
+  scale_fill_manual(values=c("#e03616", "#fff689", "#149858"))
+
+depts2 %>% tabyl(department)
+```
+In this case we only have candidates in two departments, in the Sales department and in the Research & Development department, with 2 and 4 candidates respectively.
+
+Let's take a look at the ones in Research & Development first.
+
+```{r}
+depts2 =activeEmployees%>%filter(department!="") %>% filter(job_level == 3) %>% filter(job_satisfaction == 4) %>% filter(performance_rating == 4) %>% filter(department == "Research & Development")%>%unique()
+ggplot(data = depts2, aes(x = years_since_last_promotion)) +
+  geom_bar(aes(fill = years_since_last_promotion), width = 0.75) +
+  labs(title = "Years Since Last Promotion of the Candidates (R&D)",
+       x = "Years Since Last Promotion",
+       y = "Candidates for a Promotion") +theme(axis.text.x = element_text(vjust = 0.5, hjust=1))+scale_x_continuous(breaks = c(0:12))+
+  guides(fill="none") + scale_fill_manual(values="#F8766D")
+
+depts2 %>% tabyl(years_since_last_promotion)
+```
+In this case, the person who has been 11 years since the last promotion should be the first to obtain this promotion.
+
+It's turn to take a look at the Sales department and the candidates in job level 3.
+```{r}
+depts2 =activeEmployees%>%filter(department!="") %>% filter(job_level == 3) %>% filter(job_satisfaction == 4) %>% filter(performance_rating == 4) %>% filter(department == "Sales")%>%unique()
+ggplot(data = depts2, aes(x = years_since_last_promotion)) +
+  geom_bar(aes(fill = years_since_last_promotion), width = 0.75) +
+  labs(title = "Years Since Last Promotion of the Candidates (Sales)",
+       x = "Years Since Last Promotion",
+       y = "Candidates for a Promotion") +theme(axis.text.x = element_text(vjust = 0.5, hjust=1))+scale_x_continuous(breaks = c(0:12))+
+  guides(fill="none") + scale_fill_manual(values="#F8766D")
+
+depts2 %>% tabyl(years_since_last_promotion)
+```
+We only have two candidates, one of them has been 0 years since his promotion and the other has been 2, therefore the second one should get the next promotion.
+
+### Conclusions
 
 # References 
 
