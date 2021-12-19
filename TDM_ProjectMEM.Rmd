@@ -651,8 +651,10 @@ summary <- count(ABC_analysis1, classification)
 summary$percentage <- summary$n / sum(summary$n) * 100
 summary
 ```
+As we can see the A segment represents the 42% of the employees, on the other hand, the B & C segment represents the 58% of the employees.
 
-As for the gender analysis with ABC method : 
+
+As for the gender analysis with ABC method, to see if there is an inequality at the salary level : 
 
 ```{r}
 
@@ -698,6 +700,8 @@ ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
 We will now proceed to the ABC analysis of the cities of Barcelona and London. 
 
 The objective of this ABC analysis is to see what is the difference in gender between employees in Barcelona and London. 
+
+We will start with Barcelona: 
 
 ```{r}
 ################################Barcelone################################
@@ -768,6 +772,16 @@ ggplot(data = ABC_analysis1, aes(x = classification)) +
 summary <- count(ABC_analysis1, classification)
 summary$percentage <- summary$n / sum(summary$n) * 100
 summary
+```
+
+
+As can be seen in the city of Barcelona, it follows the trend of the company in which 42% of the employees represent 70% of the company's salary cost. 
+
+Now we will make a deeper analysis to see the distribution at the gender level with this ABC classification.
+
+
+
+```{r}
 
 
 ############################Barcelona gender######################################
@@ -807,37 +821,16 @@ ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
   theme_void()
 
 
-#Representing that in a graph: 
-
-ggplot(summary_gender_ABCanalysis_A,aes(x='',y=Percen.,fill=Gender))+
-  ggtitle("Gender classification for A employees")+
-  geom_bar(stat = "Identity",width = 2,color="Yellow")+
-  coord_polar("y",start = 0)+
-  theme_void()
-#As for the B & C employees : 
-Gender <- myData$gender
-ABC_analysis_gender_BC <- mutate(ABC_analysis1,Gender)
-
-ABC_analysis_gender_BC <- ABC_analysis_gender_BC %>% filter(classification != "A")
-
-summary_gender_ABCanalysis_BC <- count( ABC_analysis_gender_BC , Gender)
-summary_gender_ABCanalysis_BC <- tibble(summary_gender_ABCanalysis_BC)
-summary_gender_ABCanalysis_BC <- mutate(summary_gender_ABCanalysis_BC, Percen.= summary_gender_ABCanalysis_BC$n/sum(summary_gender_ABCanalysis_BC$n)*100)
-summary_gender_ABCanalysis_BC
-
-# Representing that in a graph: 
-
-ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
-  ggtitle("Gender classification for B&C employees")+
-  geom_bar(stat = "Identity",width = 2,color="Yellow")+
-  coord_polar("y",start = 0)+
-  theme_void()
-
-
 ```
 
+Here we can see that among employees classified as A, there are more men than women, namely 60% of A employees are men and 40% are women. 
 
-Now we will do the analysis for London city: 
+However, there is a difference in the number of employees, it is not very large. But if we are looking for absolute gender equality at the salary level, this difference should be balanced. 
+
+As for the B & C employees we can see that there is the same difference, almost 60% are men and 40% women.
+
+
+Now we will do the same analysis for London city: 
 
 ```{r}
 ##############################################LONDON#################################################################
@@ -911,6 +904,14 @@ summary <- count(ABC_analysis1, classification)
 summary$percentage <- summary$n / sum(summary$n) * 100
 summary
 
+```
+
+For the city of London, the same trend as in Barcelona is followed: 42% of employees are classified as A and 58% are classified as B and C. 
+
+As for the analysis at the gender level in the city of London: 
+
+```{r}
+
 ############################London gender################################################
 
 ABC_analysis_gender_A <- ABC_analysis1
@@ -921,33 +922,6 @@ summary_gender_ABCanalysis_A <- count( ABC_analysis_gender_A, Gender)
 summary_gender_ABCanalysis_A <- tibble(summary_gender_ABCanalysis_A)
 summary_gender_ABCanalysis_A <- mutate(summary_gender_ABCanalysis_A, Percen.= summary_gender_ABCanalysis_A$n/sum(summary_gender_ABCanalysis_A$n)*100)
 summary_gender_ABCanalysis_A
-
-#Representing that in a graph: 
-
-ggplot(summary_gender_ABCanalysis_A,aes(x='',y=Percen.,fill=Gender))+
-  ggtitle("Gender classification for A employees")+
-  geom_bar(stat = "Identity",width = 2,color="Yellow")+
-  coord_polar("y",start = 0)+
-  theme_void()
-#As for the B & C employees : 
-Gender <- Barcelona$gender
-ABC_analysis_gender_BC <- mutate(ABC_analysis1,Gender)
-
-ABC_analysis_gender_BC <- ABC_analysis_gender_BC %>% filter(classification != "A")
-
-summary_gender_ABCanalysis_BC <- count( ABC_analysis_gender_BC , Gender)
-summary_gender_ABCanalysis_BC <- tibble(summary_gender_ABCanalysis_BC)
-summary_gender_ABCanalysis_BC <- mutate(summary_gender_ABCanalysis_BC, Percen.= summary_gender_ABCanalysis_BC$n/sum(summary_gender_ABCanalysis_BC$n)*100)
-summary_gender_ABCanalysis_BC
-
-# Representing that in a graph: 
-
-ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
-  ggtitle("Gender classification for B&C employees")+
-  geom_bar(stat = "Identity",width = 2,color="Yellow")+
-  coord_polar("y",start = 0)+
-  theme_void()
-
 
 #Representing that in a graph: 
 
@@ -977,6 +951,14 @@ ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
 
 
 ```
+
+As we can see, again, 60% of the employees classified as A are men and 40% are women.
+
+For employees classified as B and C, the same trend is followed. 
+
+
+Although there is a slight difference in salaries between men and women, we can conclude that Barcelona and London follow the same trend and that the salary difference between men and women is not very large.
+
 
 
 
