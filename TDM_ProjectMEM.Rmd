@@ -1375,14 +1375,29 @@ for (dept in depts) {
   print(activeEmployees %>% filter(department==dept)%>%tabyl(job_role))
   
 }
-
-
 ```
+In view of these results, we can determine which roles are the highest looking at which have the lowest percentage of people.
 
+As you can see the top roles in the Research & Development department from highest to lowest are:
+- Manager
+- Research Director
+
+After these we find Healthcare Representative and Manufacturing Director, which are at the same level.
+
+In the case of the Sales department:
+- Manager
+- Sales Representative
+- Sales Executive
+
+And finally, in Human Resources:
+- Manager
+- Human Resources
 
 ### Attrition model
 
-Linear Regression Model
+It is important which are the variables to take into account that make a person want to leave the company. For this reason, it was decided to create a linear regression model where we can determine the most influential variables for a person to make this decision.
+
+The variable to determine in the model is "attrition" and in a first moment all the other variables will be taken.
 
 ```{r}
 library(caTools)
@@ -1404,7 +1419,17 @@ mod1= lm(attrition ~ ., data= myDataMod)
 summary(mod1)
 ```
 
-Random Forest Model
+The most relevant variables are:
+- Business travel : Travel Frequently
+- Distance from home
+- Environment Satisfaction
+- Job involvement
+- Job Satisfaction
+- Num companies worked
+- Percent salary hike
+- Over Time: Yes (This one the most)
+
+Taking these variables into account, a random forest model will be used to validate that these variables really affect the attrition variable.
 
 ```{r}
 # Random Forest Model
@@ -1446,7 +1471,7 @@ atr_pred_train %>% glimpse()
 atr_pred_train %>%
   conf_mat(truth = attrition, estimate = .pred_class)
 ```
-Metrics of the Test Set
+Let's check at the performance of the Random Forest on the Train Set
 
 ```{r}
 library(kableExtra)
@@ -1460,18 +1485,29 @@ atr_pred_train %>%
   kbl(caption = "Random Forest Model Performance - Train") %>%
     kable_classic(full_width = F)
 ```
+The Accuracy of the model is 0.89 which is pretty high, that means the model works fine.
 
-In order to choose the variables we ran a LM test to see which variables were relevant. 
+Now that we have seen, the model works perfectly on the Train Set we have to validate it using the Test Set.
 
-The most relevant variables are:
-- Business travel : Travel Frequently
-- Distance from home
-- Enviroment Satisfaction
-- Job involvement
-- Job Satisfaction
-- Num companies worked
-- Percent salary hike
-- Over Time: Yes (This one the most)
+```{r}
+atr_ranger_wf %>%
+  predict(testing(atr_split)) %>%
+  bind_cols(testing(atr_split)) %>%
+  conf_mat(truth = attrition, estimate = .pred_class)
+```
+The metrics of the Test Set as below.
+
+```{r}
+atr_ranger_wf %>%
+  predict(testing(atr_split)) %>%
+  bind_cols(testing(atr_split)) %>%
+  class_metrics(truth = attrition, estimate = .pred_class) %>%
+  kbl(caption = "Random Forest Model Performance - Test") %>%
+      kable_classic(full_width = F)
+```
+The accuracy of the Test Set is almost 10 points lower than that of the Train Set. This is 0.82, although it has decreased, it can be concluded that the model fits very well, considering that an accuracy of this level is good.
+
+Therefore, it is concluded that the variables that have been chosen in the first moment are correct and directly affect the attrition of people. 
 
 # References 
 
