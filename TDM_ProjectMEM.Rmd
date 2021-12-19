@@ -479,6 +479,17 @@ p4 <- myData %>% group_by(gender,city,attrition) %>% count(gender,attrition) %>%
         plot.title = element_text(size=11),
         legend.title=element_blank()) 
 
+# myData %>% 
+#   ggplot(aes(fill=gender, y=attrition, x=city)) + 
+#   geom_point() +
+#   theme_ipsum()  +
+#   xlab("") +
+#   ylab("") +
+#   ylim(0,5) +
+#   labs(title = "Environment Satisfaction by Gender & City") +
+#   theme(plot.title = element_text(size=11))
+
+
 grid.arrange(p1,p2,p3,p4,ncol=2)
 
 ```
@@ -977,8 +988,13 @@ Let's take a look at all numerical variables and how they differ between departm
 bcnActive=activeEmployees%>%filter(city=="Barcelona")
 ldnActive=activeEmployees%>%filter(city=="London")
 
-bcnActive%>%filter(department!="")%>%group_by(department)%>%select_if(is.numeric)%>%summarise_all(mean)
-ldnActive%>%filter(department!="")%>%group_by(department)%>%select_if(is.numeric)%>%summarise_all(mean)
+conc2Arr=c("work_life_balance","relationship_satisfaction","performance_rating","job_satisfaction","job_involvement")
+
+conc2Arr2=c("environment_satisfaction")
+
+
+bcnActive%>%filter(department!="")%>%group_by(department)%>%select(conc2Arr)%>%summarise_all(mean)
+ldnActive%>%filter(department!="")%>%group_by(department)%>%select(conc2Arr2)%>%summarise_all(mean)
 
 
 ```
@@ -1039,14 +1055,10 @@ grid.arrange(edu_lvl_M, edu_lvl_F,edu_field_M,edu_field_F, ncol=2)
 ```
 
 
-
-
-
-
 ```{r}
 #Roger's plots
-ggplot(myData, aes(x=num_companies_worked, y=monthly_income, color= department)) + geom_point() + geom_smooth(method=lm)
-ggplot(myData, aes(x=over18))+geom_bar()
+myData %>% filter(department!="") %>% ggplot( aes(x=num_companies_worked, y=monthly_income, color= department)) + geom_point() + geom_smooth(method=lm)
+
 ggplot(myData, aes(x=num_companies_worked, y=percent_salary_hike)) + geom_point() + geom_smooth(method=lm)
 ```
 
