@@ -1006,6 +1006,154 @@ From this output we can see the following:
 
 - 
 
+Before looking into the attitude per department it is good to understand the number of employees per department, this is given in the barchart below. The barchart below shows that Research and Development is the biggest department, followed by Sales, and Human Resources is the smallest department.
+
+```{r}
+ggplot(myData%>%filter(department!=""), 
+       aes(department,fill=department)) + 
+  geom_bar()  + 
+  coord_flip() + 
+  labs(y= "Number of employees", 
+       x = "Department",
+       fill= "Department")
+```
+
+Two variables that will tell us a lot about the attitude of a certain department are the attrition and the over time. When employees leave the company is a clear indication that they either are not content with their work environment or they received a better offer from a different company. And typically over time is not valued by most employees. The following two plots are the percentage of employees with attrition yes in the dataset, and the percentage of employees that had to do overtime.
+
+```{r}
+env_sat_HR <- myData%>%filter(department=="Human Resources" & attrition!="")
+env_sat_RnD <- myData%>%filter(department=="Research and Development" & attrition!="")
+env_sat_sales <- myData%>%filter(department=="Sales" & attrition!="")
+
+departments <- c("Human Resources",
+                 "Research and Development",
+                 "Sales")
+
+perc_env_satis <- c(nrow(env_sat_HR%>%filter(attrition == "Yes"))/nrow(env_sat_HR)*100,
+                    nrow(env_sat_RnD%>%filter(attrition == "Yes"))/nrow(env_sat_RnD)*100,
+                    nrow(env_sat_sales%>%filter(attrition == "Yes"))/nrow(env_sat_sales)*100
+)
+
+percentages <- data.frame(departments,perc_env_satis)
+
+ggplot(percentages,
+       aes(x=departments,y=perc_env_satis,fill=departments)) +
+  geom_bar(position="dodge",stat = "identity")  +
+  coord_flip() +
+  labs(x = "Percentage attrition = Yes",fill = "Department",y="Percentage")
+```
+
+```{r}
+env_sat_HR <- myData%>%filter(department=="Human Resources" & over_time!="")
+env_sat_RnD <- myData%>%filter(department=="Research and Development" & over_time!="")
+env_sat_sales <- myData%>%filter(department=="Sales" & over_time!="")
+
+departments <- c("Human Resources",
+                 "Research and Development",
+                 "Sales")
+
+perc_env_satis <- c(nrow(env_sat_HR%>%filter(over_time == "Yes"))/nrow(env_sat_HR)*100,
+                    nrow(env_sat_RnD%>%filter(over_time == "Yes"))/nrow(env_sat_RnD)*100,
+                    nrow(env_sat_sales%>%filter(over_time == "Yes"))/nrow(env_sat_sales)*100
+)
+
+percentages <- data.frame(departments,perc_env_satis)
+
+ggplot(percentages,
+       aes(x=departments,y=perc_env_satis,fill=departments)) +
+  geom_bar(position="dodge",stat = "identity")  +
+  coord_flip() +
+  labs(x = "Over time = Yes",fill = "Department",y="Percentage")
+```
+
+The following plot is the percentage of employees that left the company and that indicated they had to perform over time. These plots regarding overtime and attrition show that in all three departments it is very similar.
+
+```{r}
+env_sat_HR <- myData%>%filter(department=="Human Resources" & attrition!="" & attrition == "Yes")
+env_sat_RnD <- myData%>%filter(department=="Research and Development" & attrition!="" & attrition == "Yes")
+env_sat_sales <- myData%>%filter(department=="Sales" & attrition!="" & attrition == "Yes")
+
+departments <- c("Human Resources",
+                 "Research and Development",
+                 "Sales")
+
+perc_env_satis <- c(nrow(env_sat_HR%>%filter(over_time == "Yes"))/nrow(env_sat_HR)*100,
+                    nrow(env_sat_RnD%>%filter(over_time == "Yes"))/nrow(env_sat_RnD)*100,
+                    nrow(env_sat_sales%>%filter(over_time == "Yes"))/nrow(env_sat_sales)*100
+)
+
+percentages <- data.frame(departments,perc_env_satis)
+
+ggplot(percentages,
+       aes(x=departments,y=perc_env_satis,fill=departments)) +
+  geom_bar(position="dodge",stat = "identity")  +
+  coord_flip() +
+  labs(x = "Attrition = Yes + Over time = Yes",fill = "Department",y="Percentage")
+
+```
+
+
+In order to understand the attitude per department based on the variables given in the dataset, first we need to determine the relationship between certain variables and see how they influence each other, we can start of by doing a very simple linear regression model. To our understanding the attitude of an employee is determined during its performance review which results in their performance rating, so for our linear regression model we will use the variable performance_rating as the dependent variable. After going through the significance of all the other variables, the following variables seem to have the highest significance with performance_rating: percent_salary_hike and years_in_current_role. This results in the following linear regression model with the following variables:
+  
+  ```{r}
+model <- lm(performance_rating ~ percent_salary_hike + years_in_current_role,
+            data = myData)
+summary(model)
+```
+
+The linear regression model has a R-squared value of 0.6008 meaning that these variables play an important role in determining the performance_rating. These variables will be taken into consideration to analyze the attitudes per different department and to come up with a appropriate solution.
+
+In order to understand the attitude of the different departments, first, the following plot is made with the mean of the percentage of salary hike per department, which is one of the variables in the linear regression model above.
+
+```{r}
+env_sat_HR <- myData%>%filter(department=="Human Resources")
+env_sat_RnD <- myData%>%filter(department=="Research and Development")
+env_sat_sales <- myData%>%filter(department=="Sales")
+
+departments <- c("Human Resources",
+                 "Research and Development",
+                 "Sales")
+
+perc_env_satis <- c(mean(env_sat_HR$percent_salary_hike),
+                    mean(env_sat_RnD$percent_salary_hike),
+                    mean(env_sat_sales$percent_salary_hike)
+)
+datas <- data.frame(departments,perc_env_satis)
+
+ggplot(datas,
+       aes(x=departments,y=perc_env_satis,fill=departments)) +
+  geom_bar(position="dodge",stat="identity")  +
+  coord_flip() +
+  labs(x = "Department",fill = "Department",y="Average percentage salary hike")
+```
+
+And secondly, the following plot is made with the mean of the years in the current role per department, which is one of the variables in the linear regression model above.
+
+```{r}
+env_sat_HR <- myData%>%filter(department=="Human Resources")
+env_sat_RnD <- myData%>%filter(department=="Research and Development")
+env_sat_sales <- myData%>%filter(department=="Sales")
+
+departments <- c("Human Resources",
+                 "Research and Development",
+                 "Sales")
+
+perc_env_satis <- c(mean(env_sat_HR$years_in_current_role),
+                    mean(env_sat_RnD$years_in_current_role),
+                    mean(env_sat_sales$years_in_current_role)
+)
+datas <- data.frame(departments,perc_env_satis)
+
+ggplot(datas,
+       aes(x=departments,y=perc_env_satis,fill=departments)) +
+  geom_bar(position="dodge",stat="identity")  +
+  coord_flip() +
+  labs(x = "Department",fill = "Department",y="Average years in current role")
+```
+
+The plots of the averages of the variables in the linear regression model are very similar in each department, therefore the CEO should not be very concerned about the attitudes in each department as there does not seem to be a very big difference in the data.
+
+
 # Plots of gender across different variables
 
 The next plot is to show the distribution of job involvement between men and women. It shows that the distribution of job involvement is similar between men and women.
