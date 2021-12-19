@@ -474,15 +474,15 @@ p3 <- activeEmployees %>%
   theme(plot.title = element_text(size=11))
 
 p4 <- myData %>% filter(attrition=="Yes") %>% group_by(gender,city) %>% count(gender) %>%
-  ggplot(aes(fill=gender, y=n,x=city)) + 
+  ggplot(aes(fill=gender, y=n,x=city, alpha=.5)) + 
   geom_bar(stat = "identity",position = "dodge") +
   labs(title = "Attrition by Gender & City") +
   ylab("Count") +
   theme_ipsum() +
   theme(axis.title.x = element_blank(),
         plot.title = element_text(size=11),
-        legend.title=element_blank()) +
-  scale_fill_manual(values=c("#149858", "#fff689"))
+        legend.title=element_blank()) + 
+  guides(alpha="none")
 
 grid.arrange(p1,p2,p3,p4,ncol=2)
 
