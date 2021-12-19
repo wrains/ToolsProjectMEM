@@ -359,99 +359,28 @@ Now this issue has been resolved.
 
 Other variables here are just displaying NA's and we will simply filter out NA's when we do any analysis on the different variables.
 
-# Plots of gender across different variables
-
-The first plot is to show the composition of gender in the company. It shows that more men work in the company compared to women.
-```{r,echo=TRUE,message=FALSE}
-ggplot(myData, aes(x=gender)) + geom_bar() + labs(title="Gender of employees")
-```
-
-The second plot is to show the environmental satisfaction of men versus women. The plot shows us that the distribution of environmental satisfaction is similar between men and women.
-
-```{r,echo=TRUE,message=FALSE}
-env_satis_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=environment_satisfaction)) + geom_bar() + labs(title = "Environmental satisfaction men",x="Environmental Satisfaction")
-env_satis_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=environment_satisfaction)) + geom_bar() + labs(title = "Environmental satisfaction women",x="Environmental Satisfaction")
-grid.arrange(env_satis_M, env_satis_F, ncol=2)
-```
-
-The third plot is to show the distribution of job involvement between men and women. It shows that the distribution of job involvement is similar between men and women.
-
-```{r,echo=TRUE,message=FALSE}
-job_inv_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_involvement)) + geom_bar() + labs(title = "Job involvement men",x="Job involvement factor")
-job_inv_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_involvement)) + geom_bar() + labs(title = "Job involvement women",x= "Job involvement factor")
-grid.arrange(job_inv_M, job_inv_F, ncol=2)
-```
-
-The next plot is to show the differences between the job level of men and women. It shows that the distribution looks similar, however, in men most of the men have a job level of 1 and the second highest count of job level is level 2. While most women have a job level of 1, and second most have a job level of level 2.
-
-```{r,echo=TRUE,message=FALSE}
-job_lvl_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_level)) + geom_bar() + labs(title = "Job level men", x="Job level factor")
-job_lvl_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_level)) + geom_bar() + labs(title = "Job level women", x="Job level factor")
-grid.arrange(job_lvl_M, job_lvl_F, ncol=2)
-```
-
-The next plot is to show the differences between the marital status between men and women. The plots show similar composition of divorced, married and single people in the company. Most of both men and women are married, second comes the employees that are single, and lastly the employees that are divorced.
-
-```{r,echo=TRUE,message=FALSE}
-marital_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar() + labs(title = "Marital status men", x="Marital status")
-marital_F <- ggplot(myData%>%filter(gender=="Female")%>%filter(!is.na(gender))%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar() + labs(title = "Marital status women", x="Marital status")
-grid.arrange(marital_M, marital_F, ncol=2)
-```
-
-The following plot is to show the difference is number of managers among men and women. You can see that within this company more men are in the position of manager compared to women.
-```{r,echo=TRUE,message=FALSE}
-managers_male <- myData%>%filter(gender=="Male")%>%filter(job_role=="Manager")%>%count()
-managers_female <- myData%>%filter(gender=="Female")%>%filter(job_role=="Manager")%>%count()
-temp_gender <- c("Male", "Female")
-temp_count <- c(managers_male, managers_female)
-manager_data <- data.frame(temp_gender,temp_count)
-ggplot(manager_data, aes(x=temp_gender,y=temp_count)) + geom_bar(stat="identity")+labs(title="Number of managers betwen men and women",x="Gender",y="number of managers")
-```
-
-The next plot is to show the average hourly wage between men and women. It shows that both men and women earn pretty much the same average hourly wage.
-
-```{r,echo=TRUE,message=FALSE}
-temp <- myData%>%filter(gender=="Male")
-male_hourly <- mean(temp$hourly_rate)
-temp <- myData%>%filter(gender=="Female")
-female_hourly <- mean(temp$hourly_rate)
-temp_gender <- c("Male","Female")
-temp_avg_hourly_rates <- c(male_hourly,female_hourly)
-hourly_df <- data.frame(temp_gender,temp_avg_hourly_rates)
-ggplot(hourly_df, aes(x=temp_gender,y=temp_avg_hourly_rates)) + geom_bar(stat="identity")+labs(title="Average hourly wage between men and women",x="Gender",y="Average hourly wage")
-```
-
-The next four plots show us the education level and education field between men and women in the company. It shows both a very similar distribution in education level and education field. Both men and women have a majority of a education level 3 and for educational field both for men and women the majority has a major in life sciences.
-
-```{r,echo=TRUE,message=FALSE}
-edu_lvl_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education)) + geom_bar() + labs(title = "Education level men", x="Education level")
-edu_lvl_F <- ggplot(myData%>%filter(gender=="Female")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education)) + geom_bar() + labs(title = "Education level women", x="Education level")
-edu_field_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field)) + geom_bar() + labs(title = "Education field men", x="Education field")+coord_flip()
-edu_field_F <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field)) + geom_bar() + labs(title = "Education field men", x="Education field")+coord_flip()
-grid.arrange(edu_lvl_M, edu_lvl_F,edu_field_M,edu_field_F, ncol=2)
-```
 
 
-# Branch Analysis
+# Addressing the concerns
+
+## Gender and Branch Analysis
+
+Now we will show our analysis on the various topics starting with concern 1 and analyzing gender equity and the differences, if any, between the two branches. 
 
 #### As stated by the CEO that the large part of her concern is regarding differences in structure between the two branches. Let's explore some plots to understand the differences.
-
 
 Let's start by looking at the split of the company between these two branches. We will remove attrited employees and only consider "active" employees for this comparison.
 
 For this we will create a new dataset for only attrition **"No"** as we will use it many times.
+
 ```{r}
 activeEmployees = myData %>% filter(attrition=="No")
-
-
 activeEmployees %>% group_by(city) %>% summarise(cityCount = n()) %>% 
   ggplot(aes(x=city,y=cityCount,fill = city)) +
   geom_bar(stat = "identity") + 
   geom_label(aes(label = cityCount), show.legend = FALSE) +
   labs(title = "Count of Employees by branch", x= "City", y="Count") + 
   theme(legend.position = "none")
-  
-## maybe add percentage split - add Catalan flag and Uk flag
 
 ```
 
@@ -553,14 +482,73 @@ The above variables show very even spread between genders. This bodes quite well
 
 Discrepancies by department same as above
 
+### Comparing company worklife balance to UK, Spain, and EU statistics 
 
+To further explore this topic we have brought in some outside data to ground our view of the company. 
 
+According to the European institute for Gender Equality
+(Source: https://eige.europa.eu/gender-statistics/dgs/indicator/ta_wrklab_wrk_baltime_perc__ewcs_familybalance) these are the statistics regarding work life balance for men and women in the EU, Spain, and in the UK:
 
-```{r}
-#Roger's plots
-ggplot(myData, aes(x=num_companies_worked, y=monthly_income, color= department)) + geom_point() + geom_smooth(method=lm)
-ggplot(myData, aes(x=over18))+geom_bar()
-ggplot(myData, aes(x=num_companies_worked, y=percent_salary_hike)) + geom_point() + geom_smooth(method=lm)
+EU:
+
+```{r,echo=FALSE}
+EU_worklifebalance <- c("Very well", "Well", "Not very well", "Not at all well")
+EU_worklifebalance_men <- c(26.1,53.2,16.1,4)
+EU_worklifebalance_women <- c(30.2,53.4,12.9,3)
+EU_work_life_balance <- data.frame(EU_worklifebalance,EU_worklifebalance_men,EU_worklifebalance_women)
+colnames(EU_work_life_balance) <- c("Work life balance","Men","Women")
+EU_work_life_balance
+```
+
+Spain:
+
+```{r,echo=FALSE}
+ES_worklifebalance <- c("Very well", "Well", "Not very well", "Not at all well")
+ES_worklifebalance_men <- c(21.2,52.2,18.2,8.2)
+ES_worklifebalance_women <- c(26.3,51.4,14.9,7.4)
+ES_work_life_balance <- data.frame(ES_worklifebalance,ES_worklifebalance_men,ES_worklifebalance_women)
+colnames(ES_work_life_balance) <- c("Work life balance","Men","Women")
+ES_work_life_balance
+```
+
+UK:
+
+```{r,echo=FALSE}
+UK_worklifebalance <- c("Very well", "Well", "Not very well", "Not at all well")
+UK_worklifebalance_men <- c(36,43.3,15.6,4.5)
+UK_worklifebalance_women <- c(40.6,44,12,3.2)
+UK_work_life_balance <- data.frame(UK_worklifebalance,UK_worklifebalance_men,UK_worklifebalance_women)
+colnames(UK_work_life_balance) <- c("Work life balance","Men","Women")
+UK_work_life_balance
+```
+
+These statistics can be compared with the data received for this analysis. In the data there is a column with the work-life balance, numbered between 1 to 4. Number 4 indicating very well worklife balance, 3 indicating well worklife balance, 2 indicating not very well worklife balance, and 1 indicating not at all well worklife balance. The data below shows the worklife balance of men in the company, in the EU, in Spain, and in the UK.
+
+```{r,echo=FALSE}
+company_worklifebalance <- c("Very well", "Well", "Not very well", "Not at all well")
+company_worklifebalance_men <- c(
+  (nrow(myData%>%filter(gender=="Male")%>%filter(work_life_balance == 4))/nrow(myData%>%filter(gender=="Male"))*100),
+  (nrow(myData%>%filter(gender=="Male")%>%filter(work_life_balance == 3))/nrow(myData%>%filter(gender=="Male"))*100),
+  (nrow(myData%>%filter(gender=="Male")%>%filter(work_life_balance == 2))/nrow(myData%>%filter(gender=="Male"))*100),
+  (nrow(myData%>%filter(gender=="Male")%>%filter(work_life_balance == 1))/nrow(myData%>%filter(gender=="Male"))*100)
+  )
+company_worklifebalance_women <- c(
+  (nrow(myData%>%filter(gender=="Female")%>%filter(work_life_balance == 4))/nrow(myData%>%filter(gender=="Female"))*100),
+  (nrow(myData%>%filter(gender=="Female")%>%filter(work_life_balance == 3))/nrow(myData%>%filter(gender=="Female"))*100),
+  (nrow(myData%>%filter(gender=="Female")%>%filter(work_life_balance == 2))/nrow(myData%>%filter(gender=="Female"))*100),
+  (nrow(myData%>%filter(gender=="Female")%>%filter(work_life_balance == 1))/nrow(myData%>%filter(gender=="Female"))*100)
+  )
+men_company_work_life_balance <- data.frame(company_worklifebalance,round(company_worklifebalance_men,digits = 1),EU_worklifebalance_men,ES_worklifebalance_men,UK_worklifebalance_men)
+colnames(men_company_work_life_balance) <- c("Work life balance","Company","EU","Spain","UK")
+men_company_work_life_balance
+```
+
+The data below shows the worklife balance of men in the company, in the EU, in Spain, and in the UK.
+
+```{r,echo=FALSE}
+women_company_work_life_balance <- data.frame(company_worklifebalance,round(company_worklifebalance_women,digits = 1),EU_worklifebalance_women,ES_worklifebalance_women,UK_worklifebalance_women)
+colnames(women_company_work_life_balance) <- c("Work life balance","Company","EU","Spain","UK")
+women_company_work_life_balance
 ```
 
 
@@ -990,72 +978,112 @@ ggplot(summary_gender_ABCanalysis_BC,aes(x='',y=Percen.,fill=Gender))+
 
 ```
 
-# Comparing company worklife balance to UK, Spain, and EU statistics 
 
-According to the European institute for Gender Equality
-(Source: https://eige.europa.eu/gender-statistics/dgs/indicator/ta_wrklab_wrk_baltime_perc__ewcs_familybalance) these are the statistics regarding work life balance for men and women in the EU, Spain, and in the UK:
 
-EU:
+## Concern 2 - Department Attitudes
 
-```{r,echo=FALSE}
-EU_worklifebalance <- c("Very well", "Well", "Not very well", "Not at all well")
-EU_worklifebalance_men <- c(26.1,53.2,16.1,4)
-EU_worklifebalance_women <- c(30.2,53.4,12.9,3)
-EU_work_life_balance <- data.frame(EU_worklifebalance,EU_worklifebalance_men,EU_worklifebalance_women)
-colnames(EU_work_life_balance) <- c("Work life balance","Men","Women")
-EU_work_life_balance
+Next we will consider the potentially differing department attitudes
+
+Let's take a look at all numerical variables and how they differ between departments at the two branches:
+
+```{r}
+bcnActive=activeEmployees%>%filter(city=="Barcelona")
+ldnActive=activeEmployees%>%filter(city=="London")
+
+bcnActive%>%filter(department!="")%>%group_by(department)%>%select_if(is.numeric)%>%summarise_all(mean)
+ldnActive%>%filter(department!="")%>%group_by(department)%>%select_if(is.numeric)%>%summarise_all(mean)
+
+
 ```
 
-Spain:
+From this output we can see the following:
+- 
 
-```{r,echo=FALSE}
-ES_worklifebalance <- c("Very well", "Well", "Not very well", "Not at all well")
-ES_worklifebalance_men <- c(21.2,52.2,18.2,8.2)
-ES_worklifebalance_women <- c(26.3,51.4,14.9,7.4)
-ES_work_life_balance <- data.frame(ES_worklifebalance,ES_worklifebalance_men,ES_worklifebalance_women)
-colnames(ES_work_life_balance) <- c("Work life balance","Men","Women")
-ES_work_life_balance
+# Plots of gender across different variables
+
+The first plot is to show the composition of gender in the company. It shows that more men work in the company compared to women.
+```{r,echo=TRUE,message=FALSE}
+ggplot(myData, aes(x=gender)) + geom_bar() + labs(title="Gender of employees")
 ```
 
-UK:
+The second plot is to show the environmental satisfaction of men versus women. The plot shows us that the distribution of environmental satisfaction is similar between men and women.
 
-```{r,echo=FALSE}
-UK_worklifebalance <- c("Very well", "Well", "Not very well", "Not at all well")
-UK_worklifebalance_men <- c(36,43.3,15.6,4.5)
-UK_worklifebalance_women <- c(40.6,44,12,3.2)
-UK_work_life_balance <- data.frame(UK_worklifebalance,UK_worklifebalance_men,UK_worklifebalance_women)
-colnames(UK_work_life_balance) <- c("Work life balance","Men","Women")
-UK_work_life_balance
+```{r,echo=TRUE,message=FALSE}
+env_satis_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=environment_satisfaction)) + geom_bar() + labs(title = "Environmental satisfaction men",x="Environmental Satisfaction")
+env_satis_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=environment_satisfaction)) + geom_bar() + labs(title = "Environmental satisfaction women",x="Environmental Satisfaction")
+grid.arrange(env_satis_M, env_satis_F, ncol=2)
 ```
 
-These statistics can be compared with the data received for this analysis. In the data there is a column with the work-life balance, numbered between 1 to 4. Number 4 indicating very well worklife balance, 3 indicating well worklife balance, 2 indicating not very well worklife balance, and 1 indicating not at all well worklife balance. The data below shows the worklife balance of men in the company, in the EU, in Spain, and in the UK.
+The third plot is to show the distribution of job involvement between men and women. It shows that the distribution of job involvement is similar between men and women.
 
-```{r,echo=FALSE}
-company_worklifebalance <- c("Very well", "Well", "Not very well", "Not at all well")
-company_worklifebalance_men <- c(
-  (nrow(myData%>%filter(gender=="Male")%>%filter(work_life_balance == 4))/nrow(myData%>%filter(gender=="Male"))*100),
-  (nrow(myData%>%filter(gender=="Male")%>%filter(work_life_balance == 3))/nrow(myData%>%filter(gender=="Male"))*100),
-  (nrow(myData%>%filter(gender=="Male")%>%filter(work_life_balance == 2))/nrow(myData%>%filter(gender=="Male"))*100),
-  (nrow(myData%>%filter(gender=="Male")%>%filter(work_life_balance == 1))/nrow(myData%>%filter(gender=="Male"))*100)
-  )
-company_worklifebalance_women <- c(
-  (nrow(myData%>%filter(gender=="Female")%>%filter(work_life_balance == 4))/nrow(myData%>%filter(gender=="Female"))*100),
-  (nrow(myData%>%filter(gender=="Female")%>%filter(work_life_balance == 3))/nrow(myData%>%filter(gender=="Female"))*100),
-  (nrow(myData%>%filter(gender=="Female")%>%filter(work_life_balance == 2))/nrow(myData%>%filter(gender=="Female"))*100),
-  (nrow(myData%>%filter(gender=="Female")%>%filter(work_life_balance == 1))/nrow(myData%>%filter(gender=="Female"))*100)
-  )
-men_company_work_life_balance <- data.frame(company_worklifebalance,round(company_worklifebalance_men,digits = 1),EU_worklifebalance_men,ES_worklifebalance_men,UK_worklifebalance_men)
-colnames(men_company_work_life_balance) <- c("Work life balance","Company","EU","Spain","UK")
-men_company_work_life_balance
+```{r,echo=TRUE,message=FALSE}
+job_inv_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_involvement)) + geom_bar() + labs(title = "Job involvement men",x="Job involvement factor")
+job_inv_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_involvement)) + geom_bar() + labs(title = "Job involvement women",x= "Job involvement factor")
+grid.arrange(job_inv_M, job_inv_F, ncol=2)
 ```
 
-The data below shows the worklife balance of men in the company, in the EU, in Spain, and in the UK.
+The next plot is to show the differences between the job level of men and women. It shows that the distribution looks similar, however, in men most of the men have a job level of 1 and the second highest count of job level is level 2. While most women have a job level of 1, and second most have a job level of level 2.
 
-```{r,echo=FALSE}
-women_company_work_life_balance <- data.frame(company_worklifebalance,round(company_worklifebalance_women,digits = 1),EU_worklifebalance_women,ES_worklifebalance_women,UK_worklifebalance_women)
-colnames(women_company_work_life_balance) <- c("Work life balance","Company","EU","Spain","UK")
-women_company_work_life_balance
+```{r,echo=TRUE,message=FALSE}
+job_lvl_M <- ggplot(myData%>%filter(gender=="Male"), aes(x=job_level)) + geom_bar() + labs(title = "Job level men", x="Job level factor")
+job_lvl_F <- ggplot(myData%>%filter(gender=="Female"), aes(x=job_level)) + geom_bar() + labs(title = "Job level women", x="Job level factor")
+grid.arrange(job_lvl_M, job_lvl_F, ncol=2)
 ```
+
+The next plot is to show the differences between the marital status between men and women. The plots show similar composition of divorced, married and single people in the company. Most of both men and women are married, second comes the employees that are single, and lastly the employees that are divorced.
+
+```{r,echo=TRUE,message=FALSE}
+marital_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar() + labs(title = "Marital status men", x="Marital status")
+marital_F <- ggplot(myData%>%filter(gender=="Female")%>%filter(!is.na(gender))%>%filter(marital_status!=""), aes(x=marital_status)) + geom_bar() + labs(title = "Marital status women", x="Marital status")
+grid.arrange(marital_M, marital_F, ncol=2)
+```
+
+The following plot is to show the difference is number of managers among men and women. You can see that within this company more men are in the position of manager compared to women.
+```{r,echo=TRUE,message=FALSE}
+managers_male <- myData%>%filter(gender=="Male")%>%filter(job_role=="Manager")%>%count()
+managers_female <- myData%>%filter(gender=="Female")%>%filter(job_role=="Manager")%>%count()
+temp_gender <- c("Male", "Female")
+temp_count <- c(managers_male, managers_female)
+manager_data <- data.frame(temp_gender,temp_count)
+ggplot(manager_data, aes(x=temp_gender,y=temp_count)) + geom_bar(stat="identity")+labs(title="Number of managers betwen men and women",x="Gender",y="number of managers")
+```
+
+The next plot is to show the average hourly wage between men and women. It shows that both men and women earn pretty much the same average hourly wage.
+
+```{r,echo=TRUE,message=FALSE}
+temp <- myData%>%filter(gender=="Male")
+male_hourly <- mean(temp$hourly_rate)
+temp <- myData%>%filter(gender=="Female")
+female_hourly <- mean(temp$hourly_rate)
+temp_gender <- c("Male","Female")
+temp_avg_hourly_rates <- c(male_hourly,female_hourly)
+hourly_df <- data.frame(temp_gender,temp_avg_hourly_rates)
+ggplot(hourly_df, aes(x=temp_gender,y=temp_avg_hourly_rates)) + geom_bar(stat="identity")+labs(title="Average hourly wage between men and women",x="Gender",y="Average hourly wage")
+```
+
+The next four plots show us the education level and education field between men and women in the company. It shows both a very similar distribution in education level and education field. Both men and women have a majority of a education level 3 and for educational field both for men and women the majority has a major in life sciences.
+
+```{r,echo=TRUE,message=FALSE}
+edu_lvl_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education)) + geom_bar() + labs(title = "Education level men", x="Education level")
+edu_lvl_F <- ggplot(myData%>%filter(gender=="Female")%>%filter(!is.na(gender))%>%filter(education!=""), aes(x=education)) + geom_bar() + labs(title = "Education level women", x="Education level")
+edu_field_M <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field)) + geom_bar() + labs(title = "Education field men", x="Education field")+coord_flip()
+edu_field_F <- ggplot(myData%>%filter(gender=="Male")%>%filter(!is.na(gender))%>%filter(education_field!=""), aes(x=education_field)) + geom_bar() + labs(title = "Education field men", x="Education field")+coord_flip()
+grid.arrange(edu_lvl_M, edu_lvl_F,edu_field_M,edu_field_F, ncol=2)
+```
+
+
+
+
+
+
+```{r}
+#Roger's plots
+ggplot(myData, aes(x=num_companies_worked, y=monthly_income, color= department)) + geom_point() + geom_smooth(method=lm)
+ggplot(myData, aes(x=over18))+geom_bar()
+ggplot(myData, aes(x=num_companies_worked, y=percent_salary_hike)) + geom_point() + geom_smooth(method=lm)
+```
+
+
 
 
 ### Concern 3 Analysis
