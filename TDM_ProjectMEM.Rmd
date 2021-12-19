@@ -378,8 +378,6 @@ Other variables here are just displaying NA's and we will simply filter out NA's
 
 Now we will show our analysis on the various topics starting with concern 1 and analyzing gender equity and the differences, if any, between the two branches. 
 
-#### As stated by the CEO that the large part of her concern is regarding differences in structure between the two branches. Let's explore some plots to understand the differences.
-
 Let's start by looking at the split of the company between these two branches. We will remove attrited employees and only consider "active" employees for this comparison.
 
 For this we will create a new dataset for only attrition **"No"** as we will use it many times.
@@ -448,7 +446,6 @@ library(viridis)
 p1 <- activeEmployees %>%
   ggplot(aes(fill=gender, y=monthly_income, x=city)) + 
   geom_violin(position="dodge", alpha=0.5, outlier.colour="transparent") +
-  scale_fill_viridis(discrete=T, name="") +
   theme_ipsum()  +
   xlab("") +
   ylab("") +
@@ -459,7 +456,6 @@ p1 <- activeEmployees %>%
 p2 <- activeEmployees %>%
   ggplot(aes(fill=gender, y=job_satisfaction, x=city)) + 
   geom_violin(position="dodge", alpha=0.5, outlier.colour="transparent") +
-  scale_fill_viridis(discrete=T, name="") +
   theme_ipsum()  +
   xlab("") +
   ylab("") +
@@ -470,7 +466,6 @@ p2 <- activeEmployees %>%
 p3 <- activeEmployees %>%
   ggplot(aes(fill=gender, y=environment_satisfaction, x=city)) + 
   geom_violin(position="dodge", alpha=0.5, outlier.colour="transparent") +
-  scale_fill_viridis(discrete=T, name="") +
   theme_ipsum()  +
   xlab("") +
   ylab("") +
@@ -478,27 +473,16 @@ p3 <- activeEmployees %>%
   labs(title = "Environment Satisfaction by Gender & City") +
   theme(plot.title = element_text(size=11))
 
-p4 <- myData %>% group_by(gender,city,attrition) %>% count(gender,attrition) %>%
-  ggplot(aes(fill=attrition, y=n, group=city,x=gender)) + 
+p4 <- myData %>% filter(attrition=="Yes") %>% group_by(gender,city) %>% count(gender) %>%
+  ggplot(aes(fill=gender, y=n,x=city)) + 
   geom_bar(stat = "identity",position = "dodge") +
-  labs(title = "Attrition by Gender & City - Barcelona & Spain resp.") +
+  labs(title = "Attrition by Gender & City") +
   ylab("Count") +
   theme_ipsum() +
   theme(axis.title.x = element_blank(),
         plot.title = element_text(size=11),
         legend.title=element_blank()) +
   scale_fill_manual(values=c("#149858", "#fff689"))
-
-# myData %>% 
-#   ggplot(aes(fill=gender, y=attrition, x=city)) + 
-#   geom_point() +
-#   theme_ipsum()  +
-#   xlab("") +
-#   ylab("") +
-#   ylim(0,5) +
-#   labs(title = "Environment Satisfaction by Gender & City") +
-#   theme(plot.title = element_text(size=11))
-
 
 grid.arrange(p1,p2,p3,p4,ncol=2)
 
@@ -517,7 +501,7 @@ According to the European institute for Gender Equality
 
 EU:
 
-```{r,echo=FALSE}
+```{r}
 EU_worklifebalance <- c("Very well", "Well", "Not very well", "Not at all well")
 EU_worklifebalance_men <- c(26.1,53.2,16.1,4)
 EU_worklifebalance_women <- c(30.2,53.4,12.9,3)
@@ -528,7 +512,7 @@ EU_work_life_balance
 
 Spain:
 
-```{r,echo=FALSE}
+```{r}
 ES_worklifebalance <- c("Very well", "Well", "Not very well", "Not at all well")
 ES_worklifebalance_men <- c(21.2,52.2,18.2,8.2)
 ES_worklifebalance_women <- c(26.3,51.4,14.9,7.4)
@@ -539,7 +523,7 @@ ES_work_life_balance
 
 UK:
 
-```{r,echo=FALSE}
+```{r}
 UK_worklifebalance <- c("Very well", "Well", "Not very well", "Not at all well")
 UK_worklifebalance_men <- c(36,43.3,15.6,4.5)
 UK_worklifebalance_women <- c(40.6,44,12,3.2)
@@ -550,7 +534,7 @@ UK_work_life_balance
 
 These statistics can be compared with the data received for this analysis. In the data there is a column with the work-life balance, numbered between 1 to 4. Number 4 indicating very well worklife balance, 3 indicating well worklife balance, 2 indicating not very well worklife balance, and 1 indicating not at all well worklife balance. The data below shows the worklife balance of men in the company, in the EU, in Spain, and in the UK.
 
-```{r,echo=FALSE}
+```{r}
 company_worklifebalance <- c("Very well", "Well", "Not very well", "Not at all well")
 company_worklifebalance_men <- c(
   (nrow(myData%>%filter(gender=="Male")%>%filter(work_life_balance == 4))/nrow(myData%>%filter(gender=="Male"))*100),
@@ -571,7 +555,7 @@ men_company_work_life_balance
 
 The data below shows the worklife balance of men in the company, in the EU, in Spain, and in the UK.
 
-```{r,echo=FALSE}
+```{r}
 women_company_work_life_balance <- data.frame(company_worklifebalance,round(company_worklifebalance_women,digits = 1),EU_worklifebalance_women,ES_worklifebalance_women,UK_worklifebalance_women)
 colnames(women_company_work_life_balance) <- c("Work life balance","Company","EU","Spain","UK")
 women_company_work_life_balance
@@ -1014,7 +998,14 @@ ldnActive%>%filter(department!="")%>%group_by(department)%>%select(conc2Arr2)%>%
 
 From this output we can see the following:
 
-- 
+Barcelona:
+- Slightly lower relationship satisfaction among sales department employees
+- Somewhat significantly lower environment satisfaction for sales associates 
+
+London: 
+- Fairly consistent between departments
+
+Let's take a look at this graphically.
 
 Before looking into the attitude per department it is good to understand the number of employees per department, this is given in the barchart below. The barchart below shows that Research and Development is the biggest department, followed by Sales, and Human Resources is the smallest department.
 
