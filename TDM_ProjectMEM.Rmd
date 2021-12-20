@@ -1629,4 +1629,28 @@ Also with the above analysis the company should gauge if those people meet what 
 
 [3] Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Software,  4(43), 1686, https://doi.org/10.21105/joss.01686
 
-[4] 
+[4] Firke, S. (2021, January 5). CRAN - Package janitor. Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/janitor/index.html
+
+[5] Comprehensive R Archive Network (CRAN). (2021, October 7). CRAN - Package lubridate. Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/lubridate/index.html
+
+[6] Introduction to broom. (2021, October 31). Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/broom/vignettes/broom.html
+
+[7] Arnold, J. B. (2021, January 20). CRAN - Package ggthemes. Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/ggthemes/index.html
+
+[8] Comprehensive R Archive Network (CRAN). (2021a, October 1). CRAN - Package tidymodels. Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/tidymodels/index.html
+
+[9] Rudis, B. N. R. A. S. G. (2021, October 13). Introduction to the viridis color maps. Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+
+[10] Rudis, B. (2020, March 6). CRAN - Package hrbrthemes. Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/hrbrthemes/index.html
+
+[11] Wickham, H. (2021, January 27). CRAN - Package forcats. Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/forcats/index.html
+
+[12] Comprehensive R Archive Network (CRAN). (n.d.). CRAN - Package caTools. Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/caTools/index.html
+
+[13] Zhu, H. (2021, February 19). Create Awesome HTML Table with knitr::kable and kableExtra. Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+
+[14] Comprehensive R Archive Network (CRAN). (2021c, November 22). CRAN - Package yardstick. Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/yardstick/index.html
+
+[15] Vaughan, D. (2021, October 12). CRAN - Package workflows. Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/workflows/index.html
+
+[16] Comprehensive R Archive Network (CRAN). (2021a, July 21). CRAN - Package parsnip. Cran.r-Project.Org. Retrieved December 20, 2021, from https://cran.r-project.org/web/packages/parsnip/index.html
