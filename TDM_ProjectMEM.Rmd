@@ -1181,7 +1181,7 @@ Two variables that will tell us a lot about the attitude of a certain department
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources" & attrition!="")
-env_sat_RnD <- myData%>%filter(department=="Research & Development" & attrition!="")
+env_sat_RnD <- myData%>%filter(department=="Research and Development" & attrition!="")
 env_sat_sales <- myData%>%filter(department=="Sales" & attrition!="")
 
 departments <- c("Human Resources",
@@ -1199,12 +1199,13 @@ ggplot(percentages,
        aes(x=departments,y=perc_env_satis,fill=departments)) +
   geom_bar(position="dodge",stat = "identity")  +
   labs(x = "Percentage attrition = Yes",fill = "Department",y="Percentage") +
-  scale_fill_manual(values=c("#177879", "#fff689", "#165797"))
+  scale_fill_manual(values=c("#177879", "#fff689", "#165797")) +
+  coord_flip()
 ```
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources" & over_time!="")
-env_sat_RnD <- myData%>%filter(department=="Research & Development" & over_time!="")
+env_sat_RnD <- myData%>%filter(department=="Research and Development" & over_time!="")
 env_sat_sales <- myData%>%filter(department=="Sales" & over_time!="")
 
 departments <- c("Human Resources",
@@ -1222,14 +1223,15 @@ ggplot(percentages,
        aes(x=departments,y=perc_env_satis,fill=departments)) +
   geom_bar(position="dodge",stat = "identity")  +
   labs(x = "Over time = Yes",fill = "Department",y="Percentage") +
-  scale_fill_manual(values=c("#177879", "#fff689", "#165797"))
+  scale_fill_manual(values=c("#177879", "#fff689", "#165797")) +
+  coord_flip()
 ```
 
 The following plot is the percentage of employees that left the company and that indicated they had to perform over time. These plots regarding overtime and attrition show that in all three departments it is very similar.
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources" & attrition!="" & attrition == "Yes")
-env_sat_RnD <- myData%>%filter(department=="Research & Development" & attrition!="" & attrition == "Yes")
+env_sat_RnD <- myData%>%filter(department=="Research and Development" & attrition!="" & attrition == "Yes")
 env_sat_sales <- myData%>%filter(department=="Sales" & attrition!="" & attrition == "Yes")
 
 departments <- c("Human Resources",
@@ -1246,8 +1248,11 @@ percentages <- data.frame(departments,perc_env_satis)
 ggplot(percentages,
        aes(x=departments,y=perc_env_satis,fill=departments)) +
   geom_bar(position="dodge",stat = "identity")  +
-  labs(x = "Attrition = Yes + Over time = Yes",fill = "Department",y="Percentage") +
-  scale_fill_manual(values=c("#177879", "#fff689", "#165797"))
+  labs(x = "Attrition = Yes + Over time = Yes",
+       fill = "Department",
+       y="Percentage") +
+  scale_fill_manual(values=c("#177879", "#fff689", "#165797")) +
+  coord_flip()
 
 ```
 
@@ -1266,7 +1271,7 @@ In order to understand the attitude of the different departments, first, the fol
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources")
-env_sat_RnD <- myData%>%filter(department=="Research & Development")
+env_sat_RnD <- myData%>%filter(department=="Research and Development")
 env_sat_sales <- myData%>%filter(department=="Sales")
 
 departments <- c("Human Resources",
@@ -1282,15 +1287,18 @@ datas <- data.frame(departments,perc_env_satis)
 ggplot(datas,
        aes(x=departments,y=perc_env_satis,fill=departments)) +
   geom_bar(position="dodge",stat="identity")  +
-  labs(x = "Department",fill = "Department",y="Average percentage salary hike") +
-  scale_fill_manual(values=c("#177879", "#fff689", "#165797"))
+  labs(x = "Department",
+       fill = "Department",
+       y="Average percentage salary hike") +
+  scale_fill_manual(values=c("#177879", "#fff689", "#165797")) +
+  coord_flip()
 ```
 
 And secondly, the following plot is made with the mean of the years in the current role per department, which is one of the variables in the linear regression model above.
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources")
-env_sat_RnD <- myData%>%filter(department=="Research & Development")
+env_sat_RnD <- myData%>%filter(department=="Research and Development")
 env_sat_sales <- myData%>%filter(department=="Sales")
 
 departments <- c("Human Resources",
@@ -1306,8 +1314,11 @@ datas <- data.frame(departments,perc_env_satis)
 ggplot(datas,
        aes(x=departments,y=perc_env_satis,fill=departments)) +
   geom_bar(position="dodge",stat="identity")  +
-  labs(x = "Department",fill = "Department",y="Average years in current role") +
-  scale_fill_manual(values=c("#177879", "#fff689", "#165797"))
+  labs(x = "Department",
+       fill = "Department",
+       y="Average years in current role") +
+  scale_fill_manual(values=c("#177879", "#fff689", "#165797")) +
+  coord_flip()
 ```
 
 The plots of the averages of the variables in the linear regression model are very similar in each department, therefore the CEO should not be very concerned about the attitudes in each department as there does not seem to be a very big difference in the data.
