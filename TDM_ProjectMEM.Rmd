@@ -1555,7 +1555,7 @@ ggplot(data = depts1, aes(x = years_since_last_promotion)) +
   geom_bar(aes(fill = years_since_last_promotion)) +
   labs(title = "Years Since Last Promotion of the Candidates",
        x = "Years Since Last Promotion",
-       y = "Candidates for a Promotion") +
+       y = "Candidates for a Promotion") + scale_x_continuous(breaks = c(0:11))+
   guides(fill="none") + scale_fill_manual(values="#F8766D")
 
 depts1 %>% tabyl(years_since_last_promotion)
@@ -1617,7 +1617,18 @@ If more experience is sought then the company should consider an outside hire in
 
 Also with the above analysis the company should gauge if those people meet what they want in the higher position. If not or if the interest is not there on the side of the employee then the company should consider an outside hire. 
 
+### Conclusions Concern 3
+
+As shown at the beginning of this section, the Research & Development department is the most affected in terms of attrition. The model that has been generated is important because it will help to anticipate events when a person decides to leave the company.
+This should also be taken into account in our succession plan. Where effort and years of experience within the company are rewarded. 
+
 # Conclusions
+
+At the beginning of the project we were given three different tasks, which have been developed throughout the project (Concern 1, Concern 2 and Concern 3). The objective was to analyze the current Human Resources status of the company. To carry out this objective, the new CEO of the company gave us a dataset with all the employees.
+After cleaning this dataset and understanding all the variables that were in it, we proceeded to develop the three concerns.
+The CEO of this company said that she believed very much in gender equality, and that the Barcelona office had to look like the London office because there were discrepancies. After a thorough study it has been found that this is totally the opposite, and that in the Barcelona office there is more gender equality than in London.
+Subsequently we have studied the attitudes of the staff in all the different departments and the differences between departments is very minimal, so it should not be a cause for concern as they are all maintained in the same way. 
+Finally, a succession plan has been drawn up to determine which people in the company are suitable for promotion, taking into account several variables but above all rewarding effort, performance and perseverance.
 
 
 
