@@ -1181,7 +1181,7 @@ Two variables that will tell us a lot about the attitude of a certain department
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources" & attrition!="")
-env_sat_RnD <- myData%>%filter(department=="Research and Development" & attrition!="")
+env_sat_RnD <- myData%>%filter(department=="Research & Development" & attrition!="")
 env_sat_sales <- myData%>%filter(department=="Sales" & attrition!="")
 
 departments <- c("Human Resources",
@@ -1205,7 +1205,7 @@ ggplot(percentages,
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources" & over_time!="")
-env_sat_RnD <- myData%>%filter(department=="Research and Development" & over_time!="")
+env_sat_RnD <- myData%>%filter(department=="Research & Development" & over_time!="")
 env_sat_sales <- myData%>%filter(department=="Sales" & over_time!="")
 
 departments <- c("Human Resources",
@@ -1231,7 +1231,7 @@ The following plot is the percentage of employees that left the company and that
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources" & attrition!="" & attrition == "Yes")
-env_sat_RnD <- myData%>%filter(department=="Research and Development" & attrition!="" & attrition == "Yes")
+env_sat_RnD <- myData%>%filter(department=="Research & Development" & attrition!="" & attrition == "Yes")
 env_sat_sales <- myData%>%filter(department=="Sales" & attrition!="" & attrition == "Yes")
 
 departments <- c("Human Resources",
@@ -1271,7 +1271,7 @@ In order to understand the attitude of the different departments, first, the fol
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources")
-env_sat_RnD <- myData%>%filter(department=="Research and Development")
+env_sat_RnD <- myData%>%filter(department=="Research & Development")
 env_sat_sales <- myData%>%filter(department=="Sales")
 
 departments <- c("Human Resources",
@@ -1298,7 +1298,7 @@ And secondly, the following plot is made with the mean of the years in the curre
 
 ```{r}
 env_sat_HR <- myData%>%filter(department=="Human Resources")
-env_sat_RnD <- myData%>%filter(department=="Research and Development")
+env_sat_RnD <- myData%>%filter(department=="Research & Development")
 env_sat_sales <- myData%>%filter(department=="Sales")
 
 departments <- c("Human Resources",
