@@ -12,7 +12,7 @@ output:
 ---
 
 
-```{r setup, include=FALSE}
+```{r setup, include=TRUE}
 knitr::opts_chunk$set(echo = TRUE,message = F,warning = F)
 library(tidyverse)
 library(janitor)
@@ -1609,9 +1609,17 @@ ggplot(data = depts2, aes(x = years_since_last_promotion)) +
 
 depts2 %>% tabyl(years_since_last_promotion)
 ```
-We only have two candidates, one of them has been 0 years since his promotion and the other has been 2, therefore the second one should get the next promotion.
+We only have two candidates, one of them has been 0 years since his promotion and the other has been 2, therefore the second one should likely get the next promotion. 
 
-### Conclusions
+<br>
+
+If more experience is sought then the company should consider an outside hire in this case. 
+
+Also with the above analysis the company should gauge if those people meet what they want in the higher position. If not or if the interest is not there on the side of the employee then the company should consider an outside hire. 
+
+# Conclusions
+
+
 
 # References 
 
@@ -1620,3 +1628,5 @@ We only have two candidates, one of them has been 0 years since his promotion an
 [2] R Core Team (2016). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
 
 [3] Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Software,  4(43), 1686, https://doi.org/10.21105/joss.01686
+
+[4] 
