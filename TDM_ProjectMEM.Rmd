@@ -12,8 +12,8 @@ output:
 ---
 
 
-```{r setup, include=TRUE}
-knitr::opts_chunk$set(echo = TRUE,message = F,warning = F)
+```{r setup, include=TRUE,message=FALSE,warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message = FALSE,warning = FALSE)
 library(tidyverse)
 library(janitor)
 library(lubridate)
@@ -35,6 +35,8 @@ title.toc-ignore.project-name > p > #text {
 }
 
 </style>
+
+The code for this project can be found on the following GitHub repository: <a href="https://github.com/wrains/ToolsProjectMEM">"https://github.com/wrains/ToolsProjectMEM"</a>
 
 
 ## Introduction
@@ -1552,11 +1554,11 @@ Applying the filters mentioned above, we found 1 candidate for promotion in the 
 depts1 =activeEmployees%>%filter(department!="") %>% filter(job_level == 4) %>% filter(job_satisfaction == 4) %>% filter(performance_rating == 4) %>% filter(department == "Research & Development")%>%unique()
 
 ggplot(data = depts1, aes(x = years_since_last_promotion)) +
-  geom_bar(aes(fill = years_since_last_promotion)) +
+  geom_bar(aes(fill = years_since_last_promotion),fill="#00bfc2") +
   labs(title = "Years Since Last Promotion of the Candidates",
        x = "Years Since Last Promotion",
        y = "Candidates for a Promotion") + scale_x_continuous(breaks = c(0:11))+
-  guides(fill="none") + scale_fill_manual(values="#F8766D")
+  guides(fill="none") 
 
 depts1 %>% tabyl(years_since_last_promotion)
 ```
@@ -1587,11 +1589,11 @@ Let's take a look at the ones in Research & Development first.
 ```{r}
 depts2 =activeEmployees%>%filter(department!="") %>% filter(job_level == 3) %>% filter(job_satisfaction == 4) %>% filter(performance_rating == 4) %>% filter(department == "Research & Development")%>%unique()
 ggplot(data = depts2, aes(x = years_since_last_promotion)) +
-  geom_bar(aes(fill = years_since_last_promotion), width = 0.75) +
+  geom_bar(aes(fill = years_since_last_promotion), width = 0.75,fill="#00bfc2") +
   labs(title = "Years Since Last Promotion of the Candidates (R&D)",
        x = "Years Since Last Promotion",
        y = "Candidates for a Promotion") +theme(axis.text.x = element_text(vjust = 0.5, hjust=1))+scale_x_continuous(breaks = c(0:12))+
-  guides(fill="none") + scale_fill_manual(values="#F8766D")
+  guides(fill="none")
 
 depts2 %>% tabyl(years_since_last_promotion)
 ```
@@ -1601,11 +1603,10 @@ It's turn to take a look at the Sales department and the candidates in job level
 ```{r}
 depts2 =activeEmployees%>%filter(department!="") %>% filter(job_level == 3) %>% filter(job_satisfaction == 4) %>% filter(performance_rating == 4) %>% filter(department == "Sales")%>%unique()
 ggplot(data = depts2, aes(x = years_since_last_promotion)) +
-  geom_bar(aes(fill = years_since_last_promotion), width = 0.75) +
+  geom_bar(aes(fill = years_since_last_promotion), width = 0.75,fill="#00bfc2") +
   labs(title = "Years Since Last Promotion of the Candidates (Sales)",
        x = "Years Since Last Promotion",
-       y = "Candidates for a Promotion") +theme(axis.text.x = element_text(vjust = 0.5, hjust=1))+scale_x_continuous(breaks = c(0:12))+
-  guides(fill="none") + scale_fill_manual(values="#F8766D")
+       y = "Candidates for a Promotion") +theme(axis.text.x = element_text(vjust = 0.5, hjust=1))+scale_x_continuous(breaks = c(0:12))
 
 depts2 %>% tabyl(years_since_last_promotion)
 ```
